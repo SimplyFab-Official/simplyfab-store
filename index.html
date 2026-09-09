@@ -690,9 +690,9 @@
                         <input type="number" step="0.01" id="item-price" required placeholder="1499.00">
                     </div>
                     <div class="form-group">
-                        <label id="file-input-label">Select Pictures (Accepts JPG, JPEG, PNG, WEBP, GIF, etc.):</label>
+                        <label id="file-input-label">Select Pictures (Upload multiple pictures: JPG, PNG, WEBP, etc.):</label>
                         <input type="file" id="item-files" accept="image/*" multiple>
-                        <small style="color:var(--gray); display:block; margin-top:4px;">Different file names and extensions are normalized safely into category folders without errors.</small>
+                        <small style="color:var(--gray); display:block; margin-top:4px;">Hold Ctrl or Cmd to select multiple pictures at once.</small>
                     </div>
                     <div style="display:flex; gap: 10px;">
                         <button type="submit" id="form-submit-btn" class="btn" style="flex:2;">Upload, Store & Publish to GitHub</button>
@@ -826,7 +826,7 @@
             toggleGitHubConfig();
         }
 
-        // Commit file safely to GitHub with error handling
+        // Commit file safely to GitHub with automatic SHA lookup
         async function commitFileToGitHub(path, base64Content, commitMessage) {
             if (!ghConfig.token || !ghConfig.username || !ghConfig.repo) return false;
 
@@ -1017,9 +1017,8 @@
             }
         }
 
-        // Auto-generate unique item title based on category and next SKU
         function autoGenerateItemName() {
-            if(document.getElementById('edit-item-id').value) return; // don't overwrite when editing
+            if(document.getElementById('edit-item-id').value) return;
             const category = document.getElementById('item-category').value;
             const nextSku = generateUniqueSKU(category);
             const titles = {
@@ -1030,7 +1029,6 @@
             document.getElementById('item-name').value = (titles[category] || 'SimplyFab Item ') + nextSku;
         }
 
-        // Render Admin Management Table with Search / Filter
         function renderAdminTable() {
             const tbody = document.getElementById('admin-items-table-body');
             if(!tbody) return;
@@ -1099,7 +1097,7 @@
                         let storedImageUrls = [];
                         let processedCount = 0;
 
-                        files.forEach(async (file, index) => {
+                        files.forEach((file, index) => {
                             const reader = new FileReader();
                             reader.onload = async function(e) {
                                 try {
@@ -1145,7 +1143,7 @@
                 let storedImageUrls = [];
                 let processedCount = 0;
 
-                files.forEach(async (file, index) => {
+                files.forEach((file, index) => {
                     const reader = new FileReader();
                     reader.onload = async function(e) {
                         try {
@@ -1180,9 +1178,9 @@
                             };
 
                             products.push(newItem);
-                            logActivity(`Uploaded new item [${uniqueSku}] "${name}" with ${storedImageUrls.length} normalized pictures.`);
+                            logActivity(`Uploaded new item [${uniqueSku}] "${name}" with ${storedImageUrls.length} pictures.`);
                             syncToGitHubRepo(`Published item ${uniqueSku} with category stored images.`);
-                            alert(`Item successfully uploaded, normalized, stored in [images/${category}/], and published! SKU: ${uniqueSku}`);
+                            alert(`Item successfully uploaded, stored in [images/${category}/], and published! SKU: ${uniqueSku}`);
                             resetUploadForm();
                             renderProducts('all');
                         }
