@@ -655,7 +655,7 @@
                     <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem;" onclick="toggleGitHubConfig()">⚙️ GitHub Settings</button>
                 </div>
                 
-                <!-- Hidden/Toggleable GitHub Configuration Panel -->
+                <!-- Toggleable GitHub Configuration Panel -->
                 <div id="github-config-panel" style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 10px 0; border: 1px solid #ddd; display: none;">
                     <h5 style="margin-bottom: 8px;">⚙️ GitHub Repo Credentials</h5>
                     <div style="display: flex; gap: 10px; margin-bottom: 8px;">
@@ -774,11 +774,11 @@
     </div>
 
     <script>
-        // Pre-configured GitHub Repository Config with your token
+        // Pre-configured GitHub Repository Config with your new token
         let ghConfig = JSON.parse(localStorage.getItem('simplyfab_gh_config')) || {
             username: "SimplyFab-Official",
             repo: "simplyfab-store",
-            token: "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"
+            token: "ghp_xaxUw6Z5Om5RzWFJ78FkrvICQRww8n0r125i"
         };
         localStorage.setItem('simplyfab_gh_config', JSON.stringify(ghConfig));
 
@@ -828,7 +828,10 @@
 
         // Commit file safely to GitHub with automatic SHA lookup and main branch target
         async function commitFileToGitHub(path, base64Content, commitMessage) {
-            if (!ghConfig.token || !ghConfig.username || !ghConfig.repo) return false;
+            if (!ghConfig.token || !ghConfig.username || !ghConfig.repo) {
+                alert("GitHub Token is missing! Please check '⚙️ GitHub Settings' in the admin panel.");
+                return false;
+            }
 
             const url = `https://api.github.com/repos/${ghConfig.username}/${ghConfig.repo}/contents/${path}`;
             try {
@@ -1102,6 +1105,12 @@
             const price = parseFloat(document.getElementById('item-price').value);
             const fileInput = document.getElementById('item-files');
 
+            if (!ghConfig.token) {
+                alert("Please configure your GitHub Personal Access Token in '⚙️ GitHub Settings' first!");
+                toggleGitHubConfig();
+                return;
+            }
+
             let targetSku = "";
             let existingProduct = null;
 
@@ -1146,6 +1155,8 @@
                         if (success) {
                             const rawGitHubUrl = `https://raw.githubusercontent.com/${ghConfig.username}/${ghConfig.repo}/main/${filePath}`;
                             storedImageUrls.push(rawGitHubUrl);
+                        } else {
+                            storedImageUrls.push(base64Full);
                         }
                     } catch(err) {
                         console.error("Error processing file:", err);
@@ -1154,7 +1165,7 @@
             }
 
             if (existingProduct) {
-                existingProduct.images = storedImageUrls;
+                existingProduct.images = storedImageUrls.length > 0 ? storedImageUrls : existingProduct.images;
                 finalizeUpdate(existingProduct);
             } else {
                 const newItem = {
