@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimplyFab - Boutique & Catalogue</title>
+    <style>
+        /* Dynamic Theme Variables (Default: Catalogue) */
+        :root {
+            --primary: #d4a373;
+            --primary-dark: #bc6c25;
+            --accent: #fefae0;
+            --dark: #283618;
+            --light: #f4f6f0;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --danger: #d90429;
+            --edit: #2b9348;
+        }
+
+        /* Casual Dresses Theme Variables */
+        body.theme-casual {
+            --primary: #4ea8de;
+            --primary-dark: #3a86ff;
+            --accent: #e0fbfc;
+            --dark: #1d3557;
+            --light: #f1faee;
+        }
+
+        /* Gowns Theme Variables */
+        body.theme-gowns {
+            --primary: #9b5de5;
+            --primary-dark: #7209b7;
+            --accent: #f72585;
+            --dark: #240046;
+            --light: #f8f9fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Marquee Header */
+        .marquee-container {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            padding: 8px 0;
+            font-weight: bold;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            animation: marquee 25s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Navbar & Branding */
+        header {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--primary-dark);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: var(--dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-dark);
+            color: var(--primary-dark);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #9b2226;
+        }
+
+        .btn-edit {
+            background: var(--edit);
+            color: white;
+        }
+        .btn-edit:hover {
+            background: #132a13;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Filter Tabs */
+        .filter-section {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--white);
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary-dark);
+            color: white;
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .product-img-wrapper {
+            width: 100%;
+            height: 320px;
+            overflow: hidden;
+            background: #f8f9fa;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .product-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--primary-dark);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        .product-sku {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            z-index: 2;
+        }
+
+        .card-thumbnails {
+            display: flex;
+            gap: 6px;
+            padding: 8px 12px;
+            background: #fff;
+            overflow-x: auto;
+        }
+
+        .card-thumb {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+
+        .card-thumb:hover, .card-thumb.active {
+            border-color: var(--primary-dark);
+            opacity: 1;
+        }
+
+        .product-info {
+            padding: 1rem 1.5rem 1.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .product-actions button, .product-actions a {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-cart {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid #ccc !important;
+        }
+
+        .btn-cart:hover {
+            background: #e2e8df;
+        }
+
+        .btn-messenger {
+            background: #0084ff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-messenger:hover {
+            background: #006dd6;
+        }
+
+        /* Modal Base */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--white);
+            width: 100%;
+            max-width: 750px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: modalPop 0.3s ease;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            background: var(--dark);
+            color: white;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        /* Gallery Modal Styles */
+        .gallery-main-view {
+            width: 100%;
+            height: 400px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .gallery-main-view img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .gallery-thumbs-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .gallery-thumb-item {
+            width: 80px;
+            height: 80px;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            flex-shrink: 0;
+            background: #eee;
+        }
+
+        .gallery-thumb-item.active {
+            border-color: var(--primary-dark);
+        }
+
+        .gallery-thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Admin Dashboard UI Styles */
+        .admin-section-title {
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .admin-table th, .admin-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .admin-table th {
+            background-color: var(--light);
+        }
+
+        .logs-box {
+            background: #1e1e1e;
+            color: #00ff66;
+            font-family: monospace;
+            padding: 10px;
+            border-radius: 5px;
+            height: 120px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .github-sync-status {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #28a745;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Cart items list */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .cart-item-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+        }
+
+        .official-fb-banner {
+            background: #e7f3ff;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #cce2ff;
+        }
+
+        .official-fb-banner a {
+            color: #006edc;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .official-fb-banner a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="">
+
+    <!-- Header Marquee Flash -->
+    <div class="marquee-container">
+        <div class="marquee-text">✨ Welcome to SimplyFab! Official Facebook: https://www.facebook.com/search/top?q=simple%20fab%202.0 ✨ Explore our Full Catalogue, Casual Dresses, and Gowns collections! ✨</div>
+    </div>
+
+    <!-- Official FB Page Notification Banner -->
+    <div class="official-fb-banner">
+        Official Website & Storefront. Visit our official Facebook page: <a href="https://www.facebook.com/search/top?q=simple%20fab%202.0" target="_blank">Simple Fab 2.0</a>
+    </div>
+
+    <!-- Navigation -->
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">SF</div>
+                <div class="logo-text">Simply<span>Fab</span></div>
+            </a>
+            <div class="nav-actions">
+                <button class="btn btn-outline" onclick="openCartModal()">🛒 Cart (<span id="cart-count">0</span>)</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="main-container">
+        <!-- Filter Bar -->
+        <div class="filter-section">
+            <button class="filter-btn active" onclick="filterCatalogue('all', this)">Full Catalogue</button>
+            <button class="filter-btn" onclick="filterCatalogue('casual', this)">Casual Dresses</button>
+            <button class="filter-btn" onclick="filterCatalogue('gowns', this)">Gowns</button>
+        </div>
+
+        <!-- Product Display Grid -->
+        <div id="product-grid" class="product-grid">
+            <!-- Dynamically injected items appear here -->
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Admin Authentication</h3>
+                <button class="close-modal" onclick="closeModals()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Enter Admin Password Code (021910):</label>
+                    <input type="password" id="admin-code-input" placeholder="Enter code...">
+                </div>
+                <button class="btn" style="width: 100%;" onclick="verifyAdminCode()">Login to Admin Panel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Modal -->
+    <div id="admin-dashboard-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>SimplyFab Admin Panel & Management</h3>
+                <button class="close-modal" onclick="closeModals()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="github-sync-status"><span class="sync-dot"></span> Auto-sync enabled: Pre-configured with token & GitHub storage active.</p>
+                
+                <!-- GitHub Configuration Panel -->
+                <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px solid #ddd;">
+                    <h5 style="margin-bottom: 8px;">⚙️ GitHub Repo Credentials (Pre-configured)</h5>
+                    <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                        <input type="text" id="gh-username" placeholder="GitHub Username" style="flex:1;">
+                        <input type="text" id="gh-repo" placeholder="Repository Name" style="flex:1;">
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="password" id="gh-token" placeholder="Personal Access Token" style="flex:3;">
+                        <button class="btn" onclick="saveGitHubConfig()" style="flex:1; font-size:0.8rem;">Save Config</button>
+                    </div>
+                </div>
+
+                <!-- Upload Form -->
+                <form id="upload-form" onsubmit="handleItemUpload(event)">
+                    <h4 class="admin-section-title" id="form-heading">Upload New Item</h4>
+                    <input type="hidden" id="edit-item-id" value="">
+                    
+                    <div class="form-group">
+                        <label>Item Name:</label>
+                        <input type="text" id="item-name" required placeholder="e.g., Elegant Evening Gown">
+                    </div>
+                    <div class="form-group">
+                        <label>Category:</label>
+                        <select id="item-category" required>
+                            <option value="catalogue">Catalogue (General)</option>
+                            <option value="gowns">Gowns</option>
+                            <option value="casual">Casual Dresses</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (PHP ₱):</label>
+                        <input type="number" step="0.01" id="item-price" required placeholder="1499.00">
+                    </div>
+                    <div class="form-group">
+                        <label id="file-input-label">Select Pictures (Accepts JPG, JPEG, PNG, WEBP, GIF, etc.):</label>
+                        <input type="file" id="item-files" accept="image/*" multiple>
+                        <small style="color:var(--gray); display:block; margin-top:4px;">Different file names and extensions are normalized safely into category folders without errors.</small>
+                    </div>
+                    <div style="display:flex; gap: 10px;">
+                        <button type="submit" id="form-submit-btn" class="btn" style="flex:2;">Upload, Store & Publish to GitHub</button>
+                        <button type="button" id="cancel-edit-btn" class="btn btn-outline" style="flex:1; display:none;" onclick="resetUploadForm()">Cancel Edit</button>
+                    </div>
+                </form>
+
+                <!-- Management Table -->
+                <h4 class="admin-section-title">Manage Existing Items (Update, Edit, Delete)</h4>
+                <div style="max-height: 250px; overflow-y: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Photos</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-items-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="admin-section-title">Admin Activity Monitoring Logs</h4>
+                <div id="admin-logs" class="logs-box">
+                    [System Initialization]: Admin portal loaded securely.<br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details & Photo Gallery Modal -->
+    <div id="gallery-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="gallery-modal-title">Item Photo Gallery</h3>
+                <button class="close-modal" onclick="closeModals()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="gallery-main-view">
+                    <img id="gallery-active-img" src="" alt="Expanded View">
+                </div>
+                <p style="margin-bottom: 10px; font-weight: 600; font-size: 0.9rem;">All Uploaded Photos for this Item:</p>
+                <div id="gallery-thumbs-container" class="gallery-thumbs-row">
+                    <!-- Thumbnails generated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart / Checkout Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Shopping Cart & Inquiry</h3>
+                <button class="close-modal" onclick="closeModals()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="cart-items-container">
+                    <div class="empty-state">Your cart is empty.</div>
+                </div>
+                <hr style="margin: 1.5rem 0; border:0; border-top: 1px solid #ddd;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <strong>Total:</strong>
+                    <span id="cart-total-price" style="font-size: 1.3rem; font-weight: bold; color: var(--primary-dark);">₱0.00</span>
+                </div>
+                <a href="#" id="messenger-checkout-btn" target="_blank" class="btn btn-messenger" style="width: 100%; padding: 12px; font-size: 1rem; display: none;">
+                    💬 Inquiry & Purchase via Facebook Messenger
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pre-configured GitHub Repository Config with your token
+        let ghConfig = JSON.parse(localStorage.getItem('simplyfab_gh_config')) || {
+            username: "JeffersonO",
+            repo: "simplyfab-store",
+            token: "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"
+        };
+        localStorage.setItem('simplyfab_gh_config', JSON.stringify(ghConfig));
+
+        let products = JSON.parse(localStorage.getItem('simplyfab_products')) || [
+            { 
+                id: 1, 
+                sku: "SF-CAS-0001", 
+                name: "Classic Summer Dress", 
+                category: "casual", 
+                price: 1499.00, 
+                images: [
+                    "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=600&q=80"
+                ] 
+            }
+        ];
+
+        let activityLogs = JSON.parse(localStorage.getItem('simplyfab_logs')) || [
+            `[${new Date().toLocaleTimeString()}] System booted successfully. Loaded ${products.length} catalog items.`
+        ];
+
+        let cart = [];
+
+        // Secret Shortcut Listener: Shift + Ctrl + M
+        document.addEventListener('keydown', function(event) {
+            if (event.shiftKey && event.ctrlKey && (event.key === 'm' || event.key === 'M')) {
+                event.preventDefault();
+                openAdminLoginModal();
+            }
+        });
+
+        function saveGitHubConfig() {
+            ghConfig.username = document.getElementById('gh-username').value.trim();
+            ghConfig.repo = document.getElementById('gh-repo').value.trim();
+            ghConfig.token = document.getElementById('gh-token').value.trim();
+            localStorage.setItem('simplyfab_gh_config', JSON.stringify(ghConfig));
+            alert("GitHub configuration saved successfully!");
+            logActivity("Updated GitHub repository sync credentials.");
+        }
+
+        // Commit file safely to GitHub with error handling
+        async function commitFileToGitHub(path, base64Content, commitMessage) {
+            if (!ghConfig.token || !ghConfig.username || !ghConfig.repo) return false;
+
+            const url = `https://api.github.com/repos/${ghConfig.username}/${ghConfig.repo}/contents/${path}`;
+            try {
+                let sha = null;
+                const getRes = await fetch(url, {
+                    headers: { "Authorization": `token ${ghConfig.token}` }
+                });
+                if (getRes.ok) {
+                    const fileData = await getRes.json();
+                    sha = fileData.sha;
+                }
+
+                const putRes = await fetch(url, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${ghConfig.token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: commitMessage,
+                        content: base64Content,
+                        sha: sha
+                    })
+                });
+
+                return putRes.ok;
+            } catch (err) {
+                console.error("GitHub API Error:", err);
+                return false;
+            }
+        }
+
+        async function syncToGitHubRepo(actionDescription) {
+            localStorage.setItem('simplyfab_products', JSON.stringify(products));
+            localStorage.setItem('simplyfab_logs', JSON.stringify(activityLogs));
+
+            if (!ghConfig.token) return;
+
+            const filePath = "data/products.json";
+            const jsonContent = btoa(unescape(encodeURIComponent(JSON.stringify(products, null, 2))));
+            const success = await commitFileToGitHub(filePath, jsonContent, `SimplyFab Sync: ${actionDescription}`);
+            
+            if (success) {
+                logActivity(`[GitHub Published]: Data stream successfully committed to ${ghConfig.repo}/${filePath}`);
+            }
+        }
+
+        function logActivity(action) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${action}`;
+            activityLogs.unshift(logEntry);
+            renderLogs();
+            renderAdminTable();
+        }
+
+        function renderLogs() {
+            const logsBox = document.getElementById('admin-logs');
+            if(logsBox) {
+                logsBox.innerHTML = activityLogs.join('<br>');
+            }
+        }
+
+        function renderProducts(filter = 'all') {
+            const bodyEl = document.body;
+            bodyEl.className = ''; 
+
+            if (filter === 'casual') {
+                bodyEl.classList.add('theme-casual');
+            } else if (filter === 'gowns') {
+                bodyEl.classList.add('theme-gowns');
+            }
+
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+
+            let filtered = products;
+            if (filter !== 'all') {
+                filtered = products.filter(p => p.category === filter);
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">No items available in this category yet.</div>`;
+                return;
+            }
+
+            filtered.forEach(product => {
+                const primaryImage = product.images[0] || '';
+                let thumbsHtml = '';
+                product.images.forEach((imgUrl, idx) => {
+                    thumbsHtml += `<img src="${imgUrl}" class="card-thumb ${idx === 0 ? 'active' : ''}" onclick="switchCardImage(event, ${product.id}, '${imgUrl}', this)" alt="thumb">`;
+                });
+
+                const singleItemMessengerUrl = `https://www.facebook.com/messages/t/110124887067313?text=` + encodeURIComponent(`Hi SimplyFab! I would like to inquire about item ${product.sku} - ${product.name} priced at ₱${product.price.toFixed(2)}`);
+
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-img-wrapper" onclick="openGalleryModal(${product.id})">
+                        <span class="product-badge">${product.category}</span>
+                        <span class="product-sku">${product.sku}</span>
+                        <img id="main-img-${product.id}" src="${primaryImage}" alt="${product.name}">
+                    </div>
+                    <div class="card-thumbnails">
+                        ${thumbsHtml}
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <div class="product-title">${product.name}</div>
+                            <div class="product-price">₱${product.price.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-cart" onclick="addToCart(${product.id})">Add to Cart</button>
+                            <a href="${singleItemMessengerUrl}" target="_blank" class="btn btn-messenger">
+                                💬 Inquiry
+                            </a>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function switchCardImage(event, productId, imgUrl, thumbElement) {
+            event.stopPropagation();
+            const mainImg = document.getElementById(`main-img-${productId}`);
+            if (mainImg) mainImg.src = imgUrl;
+            const cardThumbnails = thumbElement.parentElement.querySelectorAll('.card-thumb');
+            cardThumbnails.forEach(t => t.classList.remove('active'));
+            thumbElement.classList.add('active');
+        }
+
+        function filterCatalogue(category, btnElement) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            renderProducts(category);
+        }
+
+        function openGalleryModal(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            document.getElementById('gallery-modal-title').innerText = `${product.sku} - ${product.name}`;
+            const activeViewImg = document.getElementById('gallery-active-img');
+            const thumbsContainer = document.getElementById('gallery-thumbs-container');
+
+            activeViewImg.src = product.images[0];
+            thumbsContainer.innerHTML = '';
+
+            product.images.forEach((imgUrl, idx) => {
+                const thumbDiv = document.createElement('div');
+                thumbDiv.className = `gallery-thumb-item ${idx === 0 ? 'active' : ''}`;
+                thumbDiv.innerHTML = `<img src="${imgUrl}" alt="gallery photo">`;
+                thumbDiv.onclick = function() {
+                    activeViewImg.src = imgUrl;
+                    document.querySelectorAll('.gallery-thumb-item').forEach(t => t.classList.remove('active'));
+                    thumbDiv.classList.add('active');
+                };
+                thumbsContainer.appendChild(thumbDiv);
+            });
+
+            closeModals();
+            document.getElementById('gallery-modal').style.display = 'flex';
+        }
+
+        function openAdminLoginModal() {
+            closeModals();
+            document.getElementById('admin-login-modal').style.display = 'flex';
+            document.getElementById('gh-username').value = ghConfig.username;
+            document.getElementById('gh-repo').value = ghConfig.repo;
+            document.getElementById('gh-token').value = ghConfig.token;
+        }
+
+        function verifyAdminCode() {
+            const code = document.getElementById('admin-code-input').value;
+            if (code === "021910") {
+                logActivity("Admin authenticated successfully.");
+                document.getElementById('admin-code-input').value = '';
+                closeModals();
+                document.getElementById('admin-dashboard-modal').style.display = 'flex';
+                renderLogs();
+                renderAdminTable();
+            } else {
+                alert("Incorrect Admin Access Code!");
+                logActivity("Failed admin login attempt.");
+            }
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-items-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            if(products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--gray);">No items recorded.</td></tr>`;
+                return;
+            }
+
+            products.forEach(product => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><code>${product.sku}</code></td>
+                    <td><strong>${product.name}</strong></td>
+                    <td>${product.category}</td>
+                    <td>₱${product.price.toFixed(2)}</td>
+                    <td>${product.images.length} photos</td>
+                    <td>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn btn-edit" style="padding:4px 8px; font-size:0.75rem;" onclick="startEditItem(${product.id})">Edit</button>
+                            <button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteItem(${product.id})">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function generateUniqueSKU(category) {
+            const prefixMap = { 'casual': 'SF-CAS-', 'gowns': 'SF-GWN-', 'catalogue': 'SF-CAT-' };
+            const prefix = prefixMap[category] || 'SF-ITM-';
+            let maxNum = 0;
+            products.forEach(p => {
+                if(p.sku.startsWith(prefix)) {
+                    const numPart = parseInt(p.sku.replace(prefix, ''), 10);
+                    if(!isNaN(numPart) && numPart > maxNum) maxNum = numPart;
+                }
+            });
+            return prefix + String(maxNum + 1).padStart(4, '0');
+        }
+
+        async function handleItemUpload(event) {
+            event.preventDefault();
+            const editId = document.getElementById('edit-item-id').value;
+            const name = document.getElementById('item-name').value;
+            const category = document.getElementById('item-category').value;
+            const price = parseFloat(document.getElementById('item-price').value);
+            const fileInput = document.getElementById('item-files');
+
+            if (editId) {
+                const product = products.find(p => p.id == editId);
+                if (product) {
+                    product.name = name;
+                    product.category = category;
+                    product.price = price;
+
+                    if (fileInput.files && fileInput.files.length > 0) {
+                        const uniqueSku = product.sku;
+                        const files = Array.from(fileInput.files);
+                        let storedImageUrls = [];
+                        let processedCount = 0;
+
+                        files.forEach(async (file, index) => {
+                            const reader = new FileReader();
+                            reader.onload = async function(e) {
+                                try {
+                                    const base64Full = e.target.result;
+                                    const base64Data = base64Full.split(',')[1];
+                                    
+                                    let ext = file.name.split('.').pop().toLowerCase();
+                                    if (!['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'].includes(ext)) {
+                                        ext = 'jpg';
+                                    }
+
+                                    const filePath = `images/${category}/${uniqueSku}_${index + 1}.${ext}`;
+                                    
+                                    await commitFileToGitHub(filePath, base64Data, `Update image for ${uniqueSku}`);
+                                    const rawGitHubUrl = `https://raw.githubusercontent.com/${ghConfig.username}/${ghConfig.repo}/main/${filePath}`;
+                                    
+                                    storedImageUrls[index] = rawGitHubUrl;
+                                } catch(err) {
+                                    console.error("Error processing file:", err);
+                                    storedImageUrls[index] = e.target.result;
+                                }
+
+                                processedCount++;
+                                if (processedCount === files.length) {
+                                    product.images = storedImageUrls;
+                                    finalizeUpdate(product);
+                                }
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    } else {
+                        finalizeUpdate(product);
+                    }
+                }
+            } else {
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    alert("Please select at least one picture.");
+                    return;
+                }
+
+                const uniqueSku = generateUniqueSKU(category);
+                const files = Array.from(fileInput.files);
+                let storedImageUrls = [];
+                let processedCount = 0;
+
+                files.forEach(async (file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        try {
+                            const base64Full = e.target.result;
+                            const base64Data = base64Full.split(',')[1];
+
+                            let ext = file.name.split('.').pop().toLowerCase();
+                            if (!['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'].includes(ext)) {
+                                ext = 'jpg';
+                            }
+
+                            const filePath = `images/${category}/${uniqueSku}_${index + 1}.${ext}`;
+
+                            await commitFileToGitHub(filePath, base64Data, `Store picture for ${uniqueSku}`);
+                            const rawGitHubUrl = `https://raw.githubusercontent.com/${ghConfig.username}/${ghConfig.repo}/main/${filePath}`;
+
+                            storedImageUrls[index] = rawGitHubUrl;
+                        } catch(err) {
+                            console.error("Error processing file:", err);
+                            storedImageUrls[index] = e.target.result;
+                        }
+
+                        processedCount++;
+                        if (processedCount === files.length) {
+                            const newItem = {
+                                id: Date.now(),
+                                sku: uniqueSku,
+                                name: name,
+                                category: category,
+                                price: price,
+                                images: storedImageUrls
+                            };
+
+                            products.push(newItem);
+                            logActivity(`Uploaded new item [${uniqueSku}] "${name}" with ${storedImageUrls.length} normalized pictures.`);
+                            syncToGitHubRepo(`Published item ${uniqueSku} with category stored images.`);
+                            alert(`Item successfully uploaded, normalized, stored in [images/${category}/], and published! SKU: ${uniqueSku}`);
+                            resetUploadForm();
+                            renderProducts('all');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        function finalizeUpdate(product) {
+            logActivity(`Updated item [${product.sku}] "${product.name}".`);
+            syncToGitHubRepo(`Updated item ${product.sku}`);
+            alert(`Item ${product.sku} updated and published successfully!`);
+            resetUploadForm();
+            renderProducts('all');
+        }
+
+        function startEditItem(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            document.getElementById('edit-item-id').value = product.id;
+            document.getElementById('item-name').value = product.name;
+            document.getElementById('item-category').value = product.category;
+            document.getElementById('item-price').value = product.price;
+            document.getElementById('form-heading').innerText = `Edit Item: ${product.sku}`;
+            document.getElementById('form-submit-btn').innerText = `Save Changes & Publish`;
+            document.getElementById('cancel-edit-btn').style.display = 'block';
+            document.getElementById('upload-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetUploadForm() {
+            document.getElementById('upload-form').reset();
+            document.getElementById('edit-item-id').value = '';
+            document.getElementById('form-heading').innerText = 'Upload New Item';
+            document.getElementById('form-submit-btn').innerText = 'Upload, Store & Publish to GitHub';
+            document.getElementById('cancel-edit-btn').style.display = 'none';
+        }
+
+        function deleteItem(productId) {
+            const index = products.findIndex(p => p.id === productId);
+            if (index !== -1) {
+                const deleted = products.splice(index, 1)[0];
+                logActivity(`Deleted item [${deleted.sku}] "${deleted.name}".`);
+                syncToGitHubRepo(`Deleted item ${deleted.sku}`);
+                alert(`Item ${deleted.sku} has been deleted and published.`);
+                renderProducts('all');
+                renderAdminTable();
+            }
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if(product) {
+                cart.push(product);
+                updateCartCount();
+                alert(`${product.name} has been added to your cart.`);
+            }
+        }
+
+        function updateCartCount() {
+            document.getElementById('cart-count').innerText = cart.length;
+        }
+
+        function openCartModal() {
+            closeModals();
+            const container = document.getElementById('cart-items-container');
+            const totalEl = document.getElementById('cart-total-price');
+            const messengerBtn = document.getElementById('messenger-checkout-btn');
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="empty-state">Your cart is empty.</div>`;
+                totalEl.innerText = "₱0.00";
+                messengerBtn.style.display = 'none';
+            } else {
+                container.innerHTML = '';
+                let total = 0;
+                let itemSummaryList = [];
+
+                cart.forEach((item, index) => {
+                    total += item.price;
+                    itemSummaryList.push(`${item.sku} - ${item.name} (₱${item.price.toFixed(2)})`);
+
+                    const div = document.createElement('div');
+                    div.className = 'cart-item';
+                    div.innerHTML = `
+                        <div class="cart-item-info">
+                            <img src="${item.images[0]}" class="cart-item-img" alt="">
+                            <div>
+                                <strong>${item.name}</strong><br>
+                                <small style="color:var(--gray);">${item.sku} | ₱${item.price.toFixed(2)}</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.8rem;" onclick="removeFromCart(${index})">Remove</button>
+                    `;
+                    container.appendChild(div);
+                });
+
+                totalEl.innerText = `₱${total.toFixed(2)}`;
+
+                const messengerText = `Hi SimplyFab! I would like to purchase/inquire about the following items in my cart:\n\n` +
+                                      itemSummaryList.join('\n') + 
+                                      `\n\nTotal Amount: ₱${total.toFixed(2)}`;
+                messengerBtn.href = `https://www.facebook.com/messages/t/110124887067313?text=` + encodeURIComponent(messengerText);
+                messengerBtn.style.display = 'flex';
+            }
+            document.getElementById('cart-modal').style.display = 'flex';
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartCount();
+            openCartModal();
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        }
+
+        window.onload = function() {
+            renderProducts('all');
+            updateCartCount();
+        };
+    </script>
+</body>
+</html>
