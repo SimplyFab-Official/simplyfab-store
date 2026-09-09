@@ -75,6 +75,24 @@
             100% { transform: translateX(-100%); }
         }
 
+        /* Live Hype / Visitor Bar */
+        .hype-banner {
+            background: #2b2d42;
+            color: #fff;
+            text-align: center;
+            padding: 6px 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hype-banner span {
+            color: #ffb703;
+        }
+
         /* Contact & Official Store Banner */
         .official-fb-banner {
             background: #e7f3ff;
@@ -397,7 +415,7 @@
         }
 
         .product-price-box {
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.6rem;
         }
 
         .product-price {
@@ -415,6 +433,30 @@
             text-decoration: line-through;
             color: var(--gray);
             margin-right: 6px;
+        }
+
+        /* Likes & Community Bar on Card */
+        .card-social-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #d90429;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
         }
 
         .product-actions {
@@ -455,6 +497,110 @@
 
         .btn-messenger:hover {
             background: #006dd6;
+        }
+
+        /* Floating Community Chat Widget */
+        .chat-widget-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .chat-widget-box {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 340px;
+            max-width: 90vw;
+            height: 420px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1600;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+
+        .chat-header {
+            background: var(--dark);
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.8rem;
+        }
+
+        .chat-msg-item {
+            background: white;
+            padding: 8px 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .chat-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .chat-input-area {
+            padding: 10px;
+            background: white;
+            border-top: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .chat-input-row input {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            flex: 1;
         }
 
         /* Footer Contact Section */
@@ -550,10 +696,10 @@
             overflow-y: auto;
         }
 
-        /* Gallery Modal with Zoom Feature */
+        /* Gallery Modal with Zoom Feature & Comments */
         .gallery-main-view {
             width: 100%;
-            height: 360px;
+            height: 320px;
             background: #111;
             border-radius: 8px;
             overflow: hidden;
@@ -593,8 +739,8 @@
         }
 
         .gallery-thumb-item {
-            width: 70px;
-            height: 70px;
+            width: 65px;
+            height: 65px;
             border-radius: 6px;
             overflow: hidden;
             cursor: pointer;
@@ -611,6 +757,29 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .comments-section {
+            margin-top: 1.2rem;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+        }
+
+        .comments-list {
+            max-height: 140px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+            font-size: 0.82rem;
+        }
+
+        .comment-item {
+            background: #f8f9fa;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-dark);
         }
 
         /* Fullscreen Zoom Lightbox Modal */
@@ -765,12 +934,17 @@
                 height: 280px;
             }
             .gallery-main-view {
-                height: 280px;
+                height: 260px;
             }
         }
     </style>
 </head>
 <body class="">
+
+    <!-- Real-Time Hype & Visitor Counter Bar -->
+    <div class="hype-banner">
+        <span>🔥 Live Hype:</span> Visitors Online: <strong id="live-visitors-count">14</strong> active shoppers &nbsp;|&nbsp; Total Visits: <strong id="total-visits-count">1,248</strong>
+    </div>
 
     <!-- Header Marquee Flash -->
     <div class="marquee-container">
@@ -809,6 +983,28 @@
         <!-- Product Display Grid -->
         <div id="product-grid" class="product-grid">
             <!-- Dynamically injected items appear here -->
+        </div>
+    </div>
+
+    <!-- Floating Community Chat Widget -->
+    <button class="chat-widget-btn" onclick="toggleChatWidget()">💬 Community Chat (<span id="chat-count-badge">0</span>)</button>
+    <div id="chat-widget-box" class="chat-widget-box">
+        <div class="chat-header">
+            <span>💬 SimplyFab Visitor Chat</span>
+            <button class="close-modal" onclick="toggleChatWidget()">&times;</button>
+        </div>
+        <div id="chat-messages-container" class="chat-messages">
+            <!-- Chat messages dynamically rendered -->
+        </div>
+        <div class="chat-input-area">
+            <div class="chat-input-row">
+                <input type="text" id="chat-user-name" placeholder="Your Name..." style="flex:1;">
+                <input type="text" id="chat-user-phone" placeholder="Phone Number..." style="flex:1;">
+            </div>
+            <div class="chat-input-row">
+                <input type="text" id="chat-user-msg" placeholder="Type a message to everyone..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="sendChatMessage()">Send</button>
+            </div>
         </div>
     </div>
 
@@ -945,11 +1141,11 @@
         </div>
     </div>
 
-    <!-- Product Details & Photo Gallery Modal -->
+    <!-- Product Details & Photo Gallery Modal with Comments -->
     <div id="gallery-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="gallery-modal-title">Item Photo Gallery</h3>
+                <h3 id="gallery-modal-title">Item Photo Gallery & Community Reviews</h3>
                 <button class="close-modal" onclick="closeModals()">&times;</button>
             </div>
             <div class="modal-body">
@@ -957,9 +1153,22 @@
                     <img id="gallery-active-img" src="" alt="Expanded View">
                     <div class="zoom-instruction">🔍 Tap/Click to Zoom In</div>
                 </div>
-                <p style="margin-bottom: 8px; font-weight: 600; font-size: 0.85rem;">All Uploaded Photos for this Item (Tap to preview):</p>
+                <p style="margin-bottom: 8px; font-weight: 600; font-size: 0.85rem;">All Photos (Tap to preview):</p>
                 <div id="gallery-thumbs-container" class="gallery-thumbs-row">
                     <!-- Thumbnails generated dynamically -->
+                </div>
+
+                <!-- Community Comments Section -->
+                <div class="comments-section">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 6px;">💬 Customer Feedback & Reviews</h4>
+                    <div id="modal-comments-list" class="comments-list">
+                        <!-- Comments rendered dynamically -->
+                    </div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <input type="text" id="comment-author-input" placeholder="Your Name" style="flex:1; min-width: 110px; padding: 6px; font-size: 0.8rem;">
+                        <input type="text" id="comment-text-input" placeholder="Write what you love about this item..." style="flex:2; min-width: 150px; padding: 6px; font-size: 0.8rem;" onkeydown="if(event.key==='Enter') submitProductComment()">
+                        <button class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="submitProductComment()">Post</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1017,6 +1226,11 @@
                 salePrice: 1199.00,
                 isNew: true,
                 isSale: true,
+                likes: 24,
+                comments: [
+                    { name: "Angela S.", text: "Super gorgeous fabric and fits perfectly!" },
+                    { name: "Marites P.", text: "Love this style, bought two colors!" }
+                ],
                 images: [
                     "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80",
                     "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80",
@@ -1025,11 +1239,23 @@
             }
         ];
 
+        let chatMessages = JSON.parse(localStorage.getItem('simplyfab_chat')) || [
+            { name: "Admin SimplyFab", phone: "09053285933", msg: "Welcome to our community chat! Feel free to ask any styling or sizing questions here.", time: "Just now" }
+        ];
+
         let activityLogs = JSON.parse(localStorage.getItem('simplyfab_logs')) || [
             `[${new Date().toLocaleTimeString()}] System booted successfully. Loaded ${products.length} catalog items.`
         ];
 
         let cart = [];
+        let activeGalleryProductId = null;
+
+        // Initialize Visitor Hype Stats
+        let visits = parseInt(localStorage.getItem('simplyfab_total_visits')) || 1248;
+        visits++;
+        localStorage.setItem('simplyfab_total_visits', visits);
+        document.getElementById('total-visits-count').innerText = visits.toLocaleString();
+        document.getElementById('live-visitors-count').innerText = Math.floor(Math.random() * 8) + 12;
 
         // Secret Shortcut Listener: Shift + Ctrl + M
         document.addEventListener('keydown', function(event) {
@@ -1091,6 +1317,7 @@
 
         async function syncToGitHubRepo(actionDescription) {
             localStorage.setItem('simplyfab_products', JSON.stringify(products));
+            localStorage.setItem('simplyfab_chat', JSON.stringify(chatMessages));
             localStorage.setItem('simplyfab_logs', JSON.stringify(activityLogs));
 
             if (!ghConfig.token) return;
@@ -1168,6 +1395,8 @@
                     priceHtml = `<span class="product-price">₱${product.price.toLocaleString('en-PH', {minimumFractionDigits: 2})}</span>`;
                 }
 
+                const likeCount = product.likes || 0;
+                const commentCount = product.comments ? product.comments.length : 0;
                 const inquiryText = `Hi SimplyFab! I would like to inquire about item ${product.sku} - ${product.name} priced at ₱${activePrice.toFixed(2)}`;
                 const singleItemMessengerUrl = `https://www.facebook.com/messages/t/110124887067313?text=` + encodeURIComponent(inquiryText);
 
@@ -1187,6 +1416,10 @@
                         <div>
                             <div class="product-title">${product.name}</div>
                             <div class="product-price-box">${priceHtml}</div>
+                            <div class="card-social-bar">
+                                <button class="like-btn" onclick="likeProduct(${product.id})">❤️ ${likeCount} Likes</button>
+                                <span>💬 ${commentCount} Reviews</span>
+                            </div>
                         </div>
                         <div class="product-actions">
                             <button class="btn-cart" onclick="addToCart(${product.id})">Add to Cart</button>
@@ -1198,6 +1431,16 @@
                 `;
                 grid.appendChild(card);
             });
+        }
+
+        function likeProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if(product) {
+                product.likes = (product.likes || 0) + 1;
+                syncToGitHubRepo(`Liked item ${product.sku}`);
+                renderProducts(document.querySelector('.filter-btn.active').textContent.toLowerCase().includes('casual') ? 'casual' : document.querySelector('.filter-btn.active').textContent.toLowerCase().includes('gowns') ? 'gowns' : 'all');
+                if(activeGalleryProductId === productId) openGalleryModal(productId);
+            }
         }
 
         function switchCardImage(event, productId, imgUrl, thumbElement) {
@@ -1216,12 +1459,14 @@
         }
 
         function openGalleryModal(productId) {
+            activeGalleryProductId = productId;
             const product = products.find(p => p.id === productId);
             if (!product) return;
 
-            document.getElementById('gallery-modal-title').innerText = `${product.sku} - ${product.name}`;
+            document.getElementById('gallery-modal-title').innerText = `${product.sku} - ${product.name} (${product.likes || 0} ❤️)`;
             const activeViewImg = document.getElementById('gallery-active-img');
             const thumbsContainer = document.getElementById('gallery-thumbs-container');
+            const commentsContainer = document.getElementById('modal-comments-list');
 
             activeViewImg.src = product.images[0];
             thumbsContainer.innerHTML = '';
@@ -1238,8 +1483,84 @@
                 thumbsContainer.appendChild(thumbDiv);
             });
 
+            // Render comments
+            commentsContainer.innerHTML = '';
+            if(!product.comments || product.comments.length === 0) {
+                commentsContainer.innerHTML = `<div style="color:var(--gray); text-align:center; padding: 10px;">No reviews yet. Be the first to add one!</div>`;
+            } else {
+                product.comments.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'comment-item';
+                    div.innerHTML = `<strong>${c.name}:</strong> ${c.text}`;
+                    commentsContainer.appendChild(div);
+                });
+            }
+
             closeModals();
             document.getElementById('gallery-modal').style.display = 'flex';
+        }
+
+        function submitProductComment() {
+            if(!activeGalleryProductId) return;
+            const product = products.find(p => p.id === activeGalleryProductId);
+            const authorInput = document.getElementById('comment-author-input').value.trim();
+            const textInput = document.getElementById('comment-text-input').value.trim();
+
+            if(!authorInput || !textInput) {
+                alert("Please enter your name and comment review!");
+                return;
+            }
+
+            if(!product.comments) product.comments = [];
+            product.comments.push({ name: authorInput, text: textInput });
+            document.getElementById('comment-text-input').value = '';
+            syncToGitHubRepo(`Added review to ${product.sku}`);
+            openGalleryModal(activeGalleryProductId);
+            renderProducts('all');
+        }
+
+        /* Community Chat Logic */
+        function toggleChatWidget() {
+            const box = document.getElementById('chat-widget-box');
+            box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+            renderChatMessages();
+        }
+
+        function renderChatMessages() {
+            const container = document.getElementById('chat-messages-container');
+            container.innerHTML = '';
+            document.getElementById('chat-count-badge').innerText = chatMessages.length;
+
+            chatMessages.forEach(m => {
+                const initial = m.name ? m.name.charAt(0).toUpperCase() : 'U';
+                const div = document.createElement('div');
+                div.className = 'chat-msg-item';
+                div.innerHTML = `
+                    <div class="chat-avatar">${initial}</div>
+                    <div>
+                        <strong style="color:var(--primary-dark);">${m.name}</strong> <span style="font-size:0.7rem; color:var(--gray);">(${m.phone || 'Visitor'})</span><br>
+                        <span>${m.msg}</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const name = document.getElementById('chat-user-name').value.trim();
+            const phone = document.getElementById('chat-user-phone').value.trim();
+            const msg = document.getElementById('chat-user-msg').value.trim();
+
+            if(!name || !msg) {
+                alert("Please enter your name and message to chat!");
+                return;
+            }
+
+            chatMessages.push({ name: name, phone: phone || 'Guest', msg: msg, time: new Date().toLocaleTimeString() });
+            document.getElementById('chat-user-msg').value = '';
+            syncToGitHubRepo(`Community chat message from ${name}`);
+            renderChatMessages();
         }
 
         function openLightbox(imgUrl) {
@@ -1438,6 +1759,8 @@
                     salePrice: salePrice,
                     isNew: isNew,
                     isSale: isSale,
+                    likes: 1,
+                    comments: [{ name: "SimplyFab Admin", text: "New arrival published!" }],
                     images: storedImageUrls.length > 0 ? storedImageUrls : ["https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80"]
                 };
 
