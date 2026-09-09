@@ -650,11 +650,14 @@
                 <button class="close-modal" onclick="closeModals()">&times;</button>
             </div>
             <div class="modal-body">
-                <p class="github-sync-status"><span class="sync-dot"></span> Auto-sync enabled: Pre-configured with token & GitHub storage active.</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <p class="github-sync-status" style="margin:0;"><span class="sync-dot"></span> Auto-sync active & published to GitHub repository.</p>
+                    <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem;" onclick="toggleGitHubConfig()">⚙️ GitHub Settings</button>
+                </div>
                 
-                <!-- GitHub Configuration Panel -->
-                <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px solid #ddd;">
-                    <h5 style="margin-bottom: 8px;">⚙️ GitHub Repo Credentials (Pre-configured)</h5>
+                <!-- Hidden/Toggleable GitHub Configuration Panel -->
+                <div id="github-config-panel" style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 10px 0; border: 1px solid #ddd; display: none;">
+                    <h5 style="margin-bottom: 8px;">⚙️ GitHub Repo Credentials</h5>
                     <div style="display: flex; gap: 10px; margin-bottom: 8px;">
                         <input type="text" id="gh-username" placeholder="GitHub Username" style="flex:1;">
                         <input type="text" id="gh-repo" placeholder="Repository Name" style="flex:1;">
@@ -671,12 +674,12 @@
                     <input type="hidden" id="edit-item-id" value="">
                     
                     <div class="form-group">
-                        <label>Item Name:</label>
-                        <input type="text" id="item-name" required placeholder="e.g., Elegant Evening Gown">
+                        <label>Item Name (Auto-generated unique title, or customize):</label>
+                        <input type="text" id="item-name" required placeholder="Auto-generates unique title...">
                     </div>
                     <div class="form-group">
                         <label>Category:</label>
-                        <select id="item-category" required>
+                        <select id="item-category" required onchange="autoGenerateItemName()">
                             <option value="catalogue">Catalogue (General)</option>
                             <option value="gowns">Gowns</option>
                             <option value="casual">Casual Dresses</option>
@@ -697,9 +700,12 @@
                     </div>
                 </form>
 
-                <!-- Management Table -->
-                <h4 class="admin-section-title">Manage Existing Items (Update, Edit, Delete)</h4>
-                <div style="max-height: 250px; overflow-y: auto;">
+                <!-- Management Table with Search/Filter -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                    <h4 style="margin:0;">Manage Existing Items</h4>
+                    <input type="text" id="admin-search-input" placeholder="🔍 Search by SKU or Name..." style="width: 250px; padding: 6px 10px; font-size: 0.85rem;" oninput="renderAdminTable()">
+                </div>
+                <div style="max-height: 250px; overflow-y: auto; margin-top: 5px;">
                     <table class="admin-table">
                         <thead>
                             <tr>
@@ -770,7 +776,7 @@
     <script>
         // Pre-configured GitHub Repository Config with your token
         let ghConfig = JSON.parse(localStorage.getItem('simplyfab_gh_config')) || {
-            username: "JeffersonO",
+            username: "SimplyFab-Official",
             repo: "simplyfab-store",
             token: "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"
         };
@@ -780,7 +786,7 @@
             { 
                 id: 1, 
                 sku: "SF-CAS-0001", 
-                name: "Classic Summer Dress", 
+                name: "SimplyFab Casual Collection SF-CAS-0001", 
                 category: "casual", 
                 price: 1499.00, 
                 images: [
@@ -805,13 +811,19 @@
             }
         });
 
+        function toggleGitHubConfig() {
+            const panel = document.getElementById('github-config-panel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
         function saveGitHubConfig() {
             ghConfig.username = document.getElementById('gh-username').value.trim();
             ghConfig.repo = document.getElementById('gh-repo').value.trim();
             ghConfig.token = document.getElementById('gh-token').value.trim();
             localStorage.setItem('simplyfab_gh_config', JSON.stringify(ghConfig));
-            alert("GitHub configuration saved successfully!");
+            alert("GitHub configuration updated successfully!");
             logActivity("Updated GitHub repository sync credentials.");
+            toggleGitHubConfig();
         }
 
         // Commit file safely to GitHub with error handling
@@ -998,23 +1010,43 @@
                 document.getElementById('admin-dashboard-modal').style.display = 'flex';
                 renderLogs();
                 renderAdminTable();
+                autoGenerateItemName();
             } else {
                 alert("Incorrect Admin Access Code!");
                 logActivity("Failed admin login attempt.");
             }
         }
 
+        // Auto-generate unique item title based on category and next SKU
+        function autoGenerateItemName() {
+            if(document.getElementById('edit-item-id').value) return; // don't overwrite when editing
+            const category = document.getElementById('item-category').value;
+            const nextSku = generateUniqueSKU(category);
+            const titles = {
+                'casual': 'SimplyFab Casual Style ',
+                'gowns': 'SimplyFab Elegant Gown ',
+                'catalogue': 'SimplyFab Collection '
+            };
+            document.getElementById('item-name').value = (titles[category] || 'SimplyFab Item ') + nextSku;
+        }
+
+        // Render Admin Management Table with Search / Filter
         function renderAdminTable() {
             const tbody = document.getElementById('admin-items-table-body');
             if(!tbody) return;
             tbody.innerHTML = '';
 
-            if(products.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--gray);">No items recorded.</td></tr>`;
+            const searchTerm = document.getElementById('admin-search-input').value.toLowerCase();
+            const filteredProducts = products.filter(p => 
+                p.sku.toLowerCase().includes(searchTerm) || p.name.toLowerCase().includes(searchTerm)
+            );
+
+            if(filteredProducts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--gray);">No matching items found.</td></tr>`;
                 return;
             }
 
-            products.forEach(product => {
+            filteredProducts.forEach(product => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><code>${product.sku}</code></td>
@@ -1187,6 +1219,7 @@
             document.getElementById('form-heading').innerText = 'Upload New Item';
             document.getElementById('form-submit-btn').innerText = 'Upload, Store & Publish to GitHub';
             document.getElementById('cancel-edit-btn').style.display = 'none';
+            autoGenerateItemName();
         }
 
         function deleteItem(productId) {
