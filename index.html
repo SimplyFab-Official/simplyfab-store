@@ -707,7 +707,7 @@
         .modal-content {
             background: var(--white);
             width: 100%;
-            max-width: 700px;
+            max-width: 750px;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -971,6 +971,45 @@
             font-size: 0.9rem;
         }
 
+        /* Invoice Printable Receipt Styling */
+        .invoice-box {
+            background: white;
+            padding: 30px;
+            border: 1px solid #eee;
+            font-size: 0.9rem;
+            color: #333;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--primary-dark);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .invoice-logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .invoice-logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
         /* Media Queries for Mobile Fine-Tuning */
         @media (max-width: 600px) {
             .nav-container {
@@ -1093,7 +1132,7 @@
 
     <!-- Admin Dashboard Modal -->
     <div id="admin-dashboard-modal" class="modal">
-        <div class="modal-content" style="max-width: 750px;">
+        <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
                 <h3>SimplyFab Admin Panel & Management</h3>
                 <button class="close-modal" onclick="closeModals()">&times;</button>
@@ -1180,9 +1219,80 @@
                     </div>
                 </form>
 
+                <!-- Manual Invoicing & Sales Monitoring Section -->
+                <h4 class="admin-section-title">🧾 Manual Customer Invoicing & Sales Reports</h4>
+                <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1rem;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+                        <div style="flex:1; min-width: 180px;">
+                            <label style="font-size:0.8rem; font-weight:600;">Customer Name:</label>
+                            <input type="text" id="inv-cust-name" placeholder="Full name..." style="padding:6px; font-size:0.85rem;">
+                        </div>
+                        <div style="flex:2; min-width: 220px;">
+                            <label style="font-size:0.8rem; font-weight:600;">Delivery Address:</label>
+                            <input type="text" id="inv-cust-address" placeholder="Complete address..." style="padding:6px; font-size:0.85rem;">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+                        <div style="flex:1; min-width: 180px;">
+                            <label style="font-size:0.8rem; font-weight:600;">Select Catalog Item:</label>
+                            <select id="inv-item-select" style="padding:6px; font-size:0.85rem;" onchange="updateInvoiceItemPrice()">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div style="flex:1; min-width: 120px;">
+                            <label style="font-size:0.8rem; font-weight:600;">Payment Method:</label>
+                            <select id="inv-pay-method" style="padding:6px; font-size:0.85rem;">
+                                <option value="GCash">GCash</option>
+                                <option value="Bank Transfer">Bank Transfer (BPI/BDO)</option>
+                                <option value="COD">Cash on Delivery (COD)</option>
+                                <option value="Maya">Maya</option>
+                            </select>
+                        </div>
+                        <div style="flex:1; min-width: 120px;">
+                            <label style="font-size:0.8rem; font-weight:600;">Order Status:</label>
+                            <select id="inv-status" style="padding:6px; font-size:0.85rem;">
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; align-items: center;">
+                        <div style="flex:1;">
+                            <label style="font-size:0.8rem; font-weight:600;">Unit Price (₱):</label>
+                            <input type="number" id="inv-unit-price" readonly style="background:#eee; padding:6px; font-size:0.85rem;">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-size:0.8rem; font-weight:600;">Quantity:</label>
+                            <input type="number" id="inv-qty" value="1" min="1" style="padding:6px; font-size:0.85rem;" oninput="calcInvoiceTotals()">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-size:0.8rem; font-weight:600;">Partial Downpayment (₱):</label>
+                            <input type="number" id="inv-downpayment" value="0" step="0.01" style="padding:6px; font-size:0.85rem;" placeholder="Optional downpayment" oninput="calcInvoiceTotals()">
+                        </div>
+                    </div>
+                    
+                    <!-- Auto-Computed Summary Box -->
+                    <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px dashed #ccc; font-size: 0.82rem; margin-bottom: 10px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div>Subtotal: <strong id="sum-subtotal">₱0.00</strong></div>
+                        <div>PH VAT (12%): <strong id="sum-vat">₱0.00</strong></div>
+                        <div>Total Amount: <strong id="sum-total" style="color:var(--primary-dark);">₱0.00</strong></div>
+                        <div>Balance Due: <strong id="sum-balance" style="color:var(--danger);">₱0.00</strong></div>
+                    </div>
+
+                    <button class="btn" style="width: 100%;" onclick="generateAndSaveInvoice()">📄 Generate Official Invoice & Record Sale</button>
+                </div>
+
+                <!-- Sales Summary Metrics -->
+                <div style="background: #e7f3ff; padding: 10px; border-radius: 6px; border: 1px solid #cce2ff; margin-bottom: 1rem; display: flex; justify-content: space-around; text-align: center; font-size: 0.82rem; flex-wrap: wrap; gap: 10px;">
+                    <div>Total Orders: <strong id="metric-total-orders">0</strong></div>
+                    <div>Completed Orders: <strong id="metric-completed-orders" style="color:var(--edit);">0</strong></div>
+                    <div>Pending Orders: <strong id="metric-pending-orders" style="color:var(--danger);">0</strong></div>
+                    <div>Total Revenue: <strong id="metric-total-revenue" style="color:var(--primary-dark);">₱0.00</strong></div>
+                </div>
+
                 <!-- Management Table with Search/Filter -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; flex-wrap: wrap; gap: 8px;">
-                    <h4 style="margin:0; font-size: 0.95rem;">Manage Existing Items</h4>
+                    <h4 style="margin:0; font-size: 0.95rem;">Manage Existing Catalog Items</h4>
                     <input type="text" id="admin-search-input" placeholder="🔍 Search SKU or Name..." style="width: 200px; padding: 5px 8px; font-size: 0.8rem;" oninput="renderAdminTable()">
                 </div>
                 <div class="admin-table-wrapper">
@@ -1203,9 +1313,104 @@
                     </table>
                 </div>
 
+                <!-- Invoices Records Table -->
+                <h4 class="admin-section-title">Sales & Invoice Records (Completed / Pending Log)</h4>
+                <div class="admin-table-wrapper" style="max-height: 180px;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Customer</th>
+                                <th>Item</th>
+                                <th>Total</th>
+                                <th>Balance Due</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-invoices-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
                 <h4 class="admin-section-title">Admin Activity Monitoring Logs</h4>
                 <div id="admin-logs" class="logs-box">
                     [System Initialization]: Admin portal loaded securely.<br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Official Invoice Receipt Modal -->
+    <div id="invoice-modal" class="modal">
+        <div class="modal-content" style="max-width: 680px;">
+            <div class="modal-header">
+                <h3>Official Sales Receipt / Invoice</h3>
+                <button class="close-modal" onclick="closeModals()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="printable-invoice-content" class="invoice-box">
+                    <div class="invoice-header">
+                        <div class="invoice-logo-area">
+                            <div class="invoice-logo-icon">SF</div>
+                            <div>
+                                <h2 style="font-size: 1.2rem; color: var(--dark);">SimplyFab Official Store</h2>
+                                <p style="font-size: 0.75rem; color: var(--gray);">Mobile: 09954836767 | Email: tin23_angela@gmail.com</p>
+                                <p style="font-size: 0.75rem; color: var(--gray);">Facebook: facebook.com/SimplyFab02</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <h3 style="color: var(--primary-dark); font-size: 1rem;" id="receipt-inv-number">INV-2026-0001</h3>
+                            <p style="font-size: 0.75rem; color: var(--gray);" id="receipt-date">Date: Sept 10, 2026</p>
+                            <p style="font-size: 0.75rem; font-weight: bold;" id="receipt-status-badge">Status: Pending</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 0.85rem;">
+                        <strong>Customer Name:</strong> <span id="receipt-cust-name">-</span><br>
+                        <strong>Delivery Address:</strong> <span id="receipt-cust-address">-</span><br>
+                        <strong>Payment Method:</strong> <span id="receipt-pay-method">-</span>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="background: var(--light); text-align: left;">
+                                <th style="padding: 6px; border: 1px solid #ddd;">Item SKU & Description</th>
+                                <th style="padding: 6px; border: 1px solid #ddd;">Qty</th>
+                                <th style="padding: 6px; border: 1px solid #ddd;">Unit Price</th>
+                                <th style="padding: 6px; border: 1px solid #ddd;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 6px; border: 1px solid #ddd;" id="receipt-item-desc">-</td>
+                                <td style="padding: 6px; border: 1px solid #ddd;" id="receipt-qty">1</td>
+                                <td style="padding: 6px; border: 1px solid #ddd;" id="receipt-unit-price">₱0.00</td>
+                                <td style="padding: 6px; border: 1px solid #ddd;" id="receipt-subtotal">₱0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="display: flex; justify-content: flex-end; font-size: 0.85rem; margin-bottom: 15px;">
+                        <div style="width: 240px; display: flex; flex-direction: column; gap: 4px;">
+                            <div style="display: flex; justify-content: space-between;"><span>Subtotal:</span> <strong id="receipt-calc-subtotal">₱0.00</strong></div>
+                            <div style="display: flex; justify-content: space-between;"><span>PH VAT (12%):</span> <strong id="receipt-calc-vat">₱0.00</strong></div>
+                            <div style="display: flex; justify-content: space-between; border-top: 1px solid #ddd; padding-top: 4px;"><span>Total Amount:</span> <strong id="receipt-calc-total">₱0.00</strong></div>
+                            <div style="display: flex; justify-content: space-between; color: var(--edit);"><span>Downpayment Paid:</span> <strong id="receipt-calc-down">₱0.00</strong></div>
+                            <div style="display: flex; justify-content: space-between; border-top: 2px solid var(--primary-dark); padding-top: 4px; color: var(--danger);"><span>Balance Due:</span> <strong id="receipt-calc-balance">₱0.00</strong></div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; border-top: 1px dashed #ccc; padding-top: 10px; font-size: 0.75rem; color: var(--gray);">
+                        <p>Thank you for shopping with SimplyFab!</p>
+                        <p>This serves as your official sales receipt and monitoring record.</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn" style="flex:1;" onclick="printInvoiceReceipt()">🖨️ Download / Print Official Receipt</button>
+                    <button class="btn btn-outline" style="flex:1;" onclick="shareInvoiceMessenger()">💬 Share via Messenger</button>
                 </div>
             </div>
         </div>
@@ -1308,6 +1513,8 @@
             }
         ];
 
+        let invoices = JSON.parse(localStorage.getItem('simplyfab_invoices')) || [];
+
         let chatMessages = JSON.parse(localStorage.getItem('simplyfab_chat')) || [
             { name: "Admin SimplyFab", msg: "Welcome to our community chat! Feel free to ask any styling or sizing questions here.", time: "Just now" }
         ];
@@ -1387,6 +1594,7 @@
 
         async function syncToGitHubRepo(actionDescription) {
             localStorage.setItem('simplyfab_products', JSON.stringify(products));
+            localStorage.setItem('simplyfab_invoices', JSON.stringify(invoices));
             localStorage.setItem('simplyfab_chat', JSON.stringify(chatMessages));
             localStorage.setItem('simplyfab_logs', JSON.stringify(activityLogs));
 
@@ -1705,6 +1913,8 @@
                 document.getElementById('admin-dashboard-modal').style.display = 'flex';
                 renderLogs();
                 renderAdminTable();
+                populateInvoiceItemDropdown();
+                renderInvoicesTable();
                 autoGenerateItemName();
             } else {
                 alert("Incorrect Admin Access Code!");
@@ -1762,6 +1972,185 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        /* Manual Invoicing Logic */
+        function populateInvoiceItemDropdown() {
+            const select = document.getElementById('inv-item-select');
+            select.innerHTML = '';
+            products.forEach(p => {
+                const activePrice = (p.isSale && p.salePrice) ? p.salePrice : p.price;
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.setAttribute('data-price', activePrice);
+                opt.innerText = `${p.sku} - ${p.name} (₱${activePrice.toFixed(2)})`;
+                select.appendChild(opt);
+            });
+            updateInvoiceItemPrice();
+        }
+
+        function updateInvoiceItemPrice() {
+            const select = document.getElementById('inv-item-select');
+            if(select.selectedOptions.length > 0) {
+                const price = parseFloat(select.selectedOptions[0].getAttribute('data-price')) || 0;
+                document.getElementById('inv-unit-price').value = price.toFixed(2);
+                calcInvoiceTotals();
+            }
+        }
+
+        function calcInvoiceTotals() {
+            const unitPrice = parseFloat(document.getElementById('inv-unit-price').value) || 0;
+            const qty = parseInt(document.getElementById('inv-qty').value) || 1;
+            const downpayment = parseFloat(document.getElementById('inv-downpayment').value) || 0;
+
+            const subtotal = unitPrice * qty;
+            const vat = subtotal * 0.12; // Philippine VAT 12% included or standard calculation
+            const total = subtotal + vat;
+            const balance = Math.max(0, total - downpayment);
+
+            document.getElementById('sum-subtotal').innerText = `₱${subtotal.toFixed(2)}`;
+            document.getElementById('sum-vat').innerText = `₱${vat.toFixed(2)}`;
+            document.getElementById('sum-total').innerText = `₱${total.toFixed(2)}`;
+            document.getElementById('sum-balance').innerText = `₱${balance.toFixed(2)}`;
+
+            return { subtotal, vat, total, balance };
+        }
+
+        function generateUniqueInvoiceNumber() {
+            const num = invoices.length + 1;
+            return `INV-2026-${String(num).padStart(4, '0')}`;
+        }
+
+        function generateAndSaveInvoice() {
+            const custName = document.getElementById('inv-cust-name').value.trim();
+            const custAddress = document.getElementById('inv-cust-address').value.trim();
+            const select = document.getElementById('inv-item-select');
+            const payMethod = document.getElementById('inv-pay-method').value;
+            const status = document.getElementById('inv-status').value;
+            const qty = parseInt(document.getElementById('inv-qty').value) || 1;
+            const downpayment = parseFloat(document.getElementById('inv-downpayment').value) || 0;
+
+            if(!custName || !custAddress) {
+                alert("Please enter the customer name and delivery address!");
+                return;
+            }
+
+            if(select.selectedOptions.length === 0) {
+                alert("Please select a product item!");
+                return;
+            }
+
+            const productId = select.value;
+            const product = products.find(p => p.id == productId);
+            const unitPrice = parseFloat(document.getElementById('inv-unit-price').value) || 0;
+            const totals = calcInvoiceTotals();
+
+            const newInvoice = {
+                id: Date.now(),
+                invNumber: generateUniqueInvoiceNumber(),
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                customerName: custName,
+                customerAddress: custAddress,
+                itemSku: product ? product.sku : 'SF-ITEM',
+                itemName: product ? product.name : 'Custom Item',
+                qty: qty,
+                unitPrice: unitPrice,
+                subtotal: totals.subtotal,
+                vat: totals.vat,
+                total: totals.total,
+                downpayment: downpayment,
+                balance: totals.balance,
+                paymentMethod: payMethod,
+                status: status
+            };
+
+            invoices.push(newInvoice);
+            logActivity(`Generated invoice ${newInvoice.invNumber} for ${custName} [Status: ${status}]`);
+            syncToGitHubRepo(`Created invoice ${newInvoice.invNumber}`);
+
+            renderInvoicesTable();
+            openInvoiceReceiptModal(newInvoice.id);
+            alert(`Invoice ${newInvoice.invNumber} successfully generated and recorded!`);
+        }
+
+        function renderInvoicesTable() {
+            const tbody = document.getElementById('admin-invoices-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            let totalRevenue = 0;
+            let completedCount = 0;
+            let pendingCount = 0;
+
+            if(invoices.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--gray);">No invoices generated yet.</td></tr>`;
+            } else {
+                invoices.forEach(inv => {
+                    totalRevenue += inv.total;
+                    if(inv.status === 'Completed') completedCount++;
+                    else pendingCount++;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><code>${inv.invNumber}</code></td>
+                        <td><strong>${inv.customerName}</strong></td>
+                        <td>${inv.itemName} (${inv.qty}x)</td>
+                        <td>₱${inv.total.toFixed(2)}</td>
+                        <td>₱${inv.balance.toFixed(2)}</td>
+                        <td><span style="color:${inv.status === 'Completed' ? 'var(--edit)' : 'var(--danger)'}; font-weight:bold;">${inv.status}</span></td>
+                        <td>
+                            <button class="btn btn-outline" style="padding:2px 6px; font-size:0.7rem;" onclick="openInvoiceReceiptModal(${inv.id})">View</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('metric-total-orders').innerText = invoices.length;
+            document.getElementById('metric-completed-orders').innerText = completedCount;
+            document.getElementById('metric-pending-orders').innerText = pendingCount;
+            document.getElementById('metric-total-revenue').innerText = `₱${totalRevenue.toFixed(2)}`;
+        }
+
+        function openInvoiceReceiptModal(invoiceId) {
+            const inv = invoices.find(i => i.id == invoiceId);
+            if(!inv) return;
+
+            document.getElementById('receipt-inv-number').innerText = inv.invNumber;
+            document.getElementById('receipt-date').innerText = `Date: ${inv.date}`;
+            document.getElementById('receipt-status-badge').innerText = `Status: ${inv.status}`;
+            document.getElementById('receipt-status-badge').style.color = inv.status === 'Completed' ? 'var(--edit)' : 'var(--danger)';
+
+            document.getElementById('receipt-cust-name').innerText = inv.customerName;
+            document.getElementById('receipt-cust-address').innerText = inv.customerAddress;
+            document.getElementById('receipt-pay-method').innerText = inv.paymentMethod;
+
+            document.getElementById('receipt-item-desc').innerText = `${inv.itemSku} - ${inv.itemName}`;
+            document.getElementById('receipt-qty').innerText = inv.qty;
+            document.getElementById('receipt-unit-price').innerText = `₱${inv.unitPrice.toFixed(2)}`;
+            document.getElementById('receipt-subtotal').innerText = `₱${(inv.unitPrice * inv.qty).toFixed(2)}`;
+
+            document.getElementById('receipt-calc-subtotal').innerText = `₱${inv.subtotal.toFixed(2)}`;
+            document.getElementById('receipt-calc-vat').innerText = `₱${inv.vat.toFixed(2)}`;
+            document.getElementById('receipt-calc-total').innerText = `₱${inv.total.toFixed(2)}`;
+            document.getElementById('receipt-calc-down').innerText = `₱${inv.downpayment.toFixed(2)}`;
+            document.getElementById('receipt-calc-balance').innerText = `₱${inv.balance.toFixed(2)}`;
+
+            closeModals();
+            document.getElementById('invoice-modal').style.display = 'flex';
+        }
+
+        function printInvoiceReceipt() {
+            window.print();
+        }
+
+        function shareInvoiceMessenger() {
+            const invNum = document.getElementById('receipt-inv-number').innerText;
+            const custName = document.getElementById('receipt-cust-name').innerText;
+            const total = document.getElementById('receipt-calc-total').innerText;
+            const balance = document.getElementById('receipt-calc-balance').innerText;
+            const text = `Hello ${custName}! Here is your official SimplyFab invoice receipt [${invNum}]. Total Amount: ${total}, Balance Due: ${balance}. Thank you for ordering with SimplyFab!`;
+            window.open(`https://www.facebook.com/messages/t/110124887067313?text=` + encodeURIComponent(text), '_blank');
         }
 
         function generateUniqueSKU(category) {
@@ -1893,6 +2282,7 @@
                 alert(`Item successfully uploaded, stored in GitHub, and published! SKU: ${targetSku}`);
                 resetUploadForm();
                 renderProducts('all');
+                populateInvoiceItemDropdown();
             }
         }
 
@@ -1902,6 +2292,7 @@
             alert(`Item ${product.sku} updated and published successfully!`);
             resetUploadForm();
             renderProducts('all');
+            populateInvoiceItemDropdown();
         }
 
         function startEditItem(productId) {
@@ -1946,6 +2337,7 @@
                 alert(`Item ${deleted.sku} has been deleted and published.`);
                 renderProducts('all');
                 renderAdminTable();
+                populateInvoiceItemDropdown();
             }
         }
 
