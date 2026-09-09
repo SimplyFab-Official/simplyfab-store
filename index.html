@@ -48,6 +48,7 @@
             background-color: var(--light);
             color: var(--dark);
             line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Marquee Header */
@@ -59,7 +60,7 @@
             position: relative;
             padding: 8px 0;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             letter-spacing: 1px;
         }
 
@@ -71,6 +72,25 @@
         @keyframes marquee {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
+        }
+
+        /* Official FB Page Notification Banner */
+        .official-fb-banner {
+            background: #e7f3ff;
+            text-align: center;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #cce2ff;
+        }
+
+        .official-fb-banner a {
+            color: #006edc;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .official-fb-banner a:hover {
+            text-decoration: underline;
         }
 
         /* Navbar & Branding */
@@ -88,19 +108,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 0.8rem 1rem;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             text-decoration: none;
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border-radius: 50%;
@@ -108,12 +128,12 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .logo-text {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: var(--dark);
             letter-spacing: -0.5px;
@@ -125,7 +145,7 @@
 
         .nav-actions {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
         }
 
@@ -133,13 +153,21 @@
             background: var(--primary-dark);
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 8px 14px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.3s;
+            transition: background 0.3s, transform 0.1s;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
         }
 
         .btn:hover {
@@ -176,27 +204,28 @@
         /* Main Container */
         .main-container {
             max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
         }
 
         /* Filter Tabs */
         .filter-section {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 2rem;
+            gap: 8px;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
         }
 
         .filter-btn {
             background: var(--white);
             border: 1px solid #ddd;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 30px;
             cursor: pointer;
             font-weight: 600;
             color: var(--gray);
+            font-size: 0.85rem;
             transition: all 0.3s;
         }
 
@@ -210,13 +239,13 @@
         /* Product Grid */
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
         }
 
         .product-card {
             background: var(--white);
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             transition: transform 0.3s, box-shadow 0.3s;
@@ -225,17 +254,17 @@
         }
 
         .product-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
 
         .product-img-wrapper {
             width: 100%;
-            height: 320px;
+            height: 300px;
             overflow: hidden;
             background: #f8f9fa;
             position: relative;
-            cursor: pointer;
+            cursor: zoom-in;
         }
 
         .product-img-wrapper img {
@@ -247,7 +276,7 @@
         }
 
         .product-card:hover .product-img-wrapper img {
-            transform: scale(1.05);
+            transform: scale(1.04);
         }
 
         .product-badge {
@@ -258,7 +287,7 @@
             color: white;
             padding: 4px 10px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: bold;
             text-transform: uppercase;
             z-index: 2;
@@ -272,7 +301,7 @@
             color: white;
             padding: 4px 8px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-family: monospace;
             z-index: 2;
         }
@@ -283,16 +312,18 @@
             padding: 8px 12px;
             background: #fff;
             overflow-x: auto;
+            scrollbar-width: thin;
         }
 
         .card-thumb {
-            width: 45px;
-            height: 45px;
+            width: 42px;
+            height: 42px;
             object-fit: cover;
             border-radius: 4px;
             cursor: pointer;
             border: 2px solid transparent;
             opacity: 0.7;
+            flex-shrink: 0;
             transition: all 0.2s;
         }
 
@@ -302,7 +333,7 @@
         }
 
         .product-info {
-            padding: 1rem 1.5rem 1.5rem 1.5rem;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
@@ -310,29 +341,29 @@
         }
 
         .product-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             color: var(--dark);
         }
 
         .product-price {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 800;
             color: var(--primary-dark);
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }
 
         .product-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .product-actions button, .product-actions a {
             flex: 1;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 0.85rem;
+            padding: 9px;
+            border-radius: 6px;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             border: none;
@@ -371,38 +402,46 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.75);
             z-index: 2000;
             justify-content: center;
             align-items: center;
-            padding: 1rem;
+            padding: 0.5rem;
         }
 
         .modal-content {
             background: var(--white);
             width: 100%;
-            max-width: 750px;
-            border-radius: 10px;
+            max-width: 700px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: modalPop 0.3s ease;
-            max-height: 90vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: modalPop 0.25s ease;
+            max-height: 92vh;
             display: flex;
             flex-direction: column;
         }
 
         @keyframes modalPop {
-            0% { transform: scale(0.9); opacity: 0; }
+            0% { transform: scale(0.92); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
 
         .modal-header {
             background: var(--dark);
             color: white;
-            padding: 1.2rem 1.5rem;
+            padding: 1rem 1.2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-right: 10px;
         }
 
         .close-modal {
@@ -411,42 +450,59 @@
             color: white;
             font-size: 1.5rem;
             cursor: pointer;
+            line-height: 1;
         }
 
         .modal-body {
-            padding: 1.5rem;
+            padding: 1.2rem;
             overflow-y: auto;
         }
 
-        /* Gallery Modal Styles */
+        /* Gallery Modal with Zoom Feature */
         .gallery-main-view {
             width: 100%;
-            height: 400px;
-            background: #000;
+            height: 360px;
+            background: #111;
             border-radius: 8px;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
+            position: relative;
+            cursor: zoom-in;
         }
 
         .gallery-main-view img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .zoom-instruction {
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            padding: 3px 8px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            pointer-events: none;
         }
 
         .gallery-thumbs-row {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding-bottom: 5px;
+            scrollbar-width: thin;
         }
 
         .gallery-thumb-item {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 6px;
             overflow: hidden;
             cursor: pointer;
@@ -465,43 +521,73 @@
             object-fit: cover;
         }
 
+        /* Fullscreen Zoom Lightbox Modal */
+        #lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.92);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            cursor: zoom-out;
+        }
+
+        #lightbox-modal img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+        }
+
         /* Admin Dashboard UI Styles */
         .admin-section-title {
-            margin: 1.5rem 0 1rem 0;
-            font-size: 1.1rem;
+            margin: 1.2rem 0 0.8rem 0;
+            font-size: 1rem;
             border-bottom: 2px solid #eee;
-            padding-bottom: 5px;
+            padding-bottom: 4px;
         }
 
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 10px;
+            padding: 9px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+        }
+
+        .admin-table-wrapper {
+            overflow-x: auto;
+            max-height: 220px;
+            margin-top: 5px;
         }
 
         .admin-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
 
         .admin-table th, .admin-table td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 8px;
             text-align: left;
         }
 
@@ -515,24 +601,24 @@
             font-family: monospace;
             padding: 10px;
             border-radius: 5px;
-            height: 120px;
+            height: 100px;
             overflow-y: auto;
-            font-size: 0.8rem;
-            margin-top: 1rem;
+            font-size: 0.75rem;
+            margin-top: 0.8rem;
         }
 
         .github-sync-status {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--gray);
-            margin-top: 5px;
+            margin-top: 4px;
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
         .sync-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background-color: #28a745;
             border-radius: 50%;
             display: inline-block;
@@ -549,39 +635,46 @@
 
         .cart-item-info {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
         }
 
         .cart-item-img {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             object-fit: cover;
             border-radius: 4px;
         }
 
         .empty-state {
             text-align: center;
-            padding: 3rem;
+            padding: 2.5rem;
             color: var(--gray);
-        }
-
-        .official-fb-banner {
-            background: #e7f3ff;
-            text-align: center;
-            padding: 10px;
             font-size: 0.9rem;
-            border-bottom: 1px solid #cce2ff;
         }
 
-        .official-fb-banner a {
-            color: #006edc;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        .official-fb-banner a:hover {
-            text-decoration: underline;
+        /* Media Queries for Mobile Fine-Tuning */
+        @media (max-width: 600px) {
+            .nav-container {
+                padding: 0.6rem 0.8rem;
+            }
+            .logo-text {
+                font-size: 1.3rem;
+            }
+            .main-container {
+                padding: 0 0.8rem;
+                margin: 1rem auto;
+            }
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .product-img-wrapper {
+                height: 280px;
+            }
+            .gallery-main-view {
+                height: 280px;
+            }
         }
     </style>
 </head>
@@ -627,7 +720,7 @@
 
     <!-- Admin Login Modal -->
     <div id="admin-login-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-content" style="max-width: 380px;">
             <div class="modal-header">
                 <h3>Admin Authentication</h3>
                 <button class="close-modal" onclick="closeModals()">&times;</button>
@@ -644,27 +737,27 @@
 
     <!-- Admin Dashboard Modal -->
     <div id="admin-dashboard-modal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-content" style="max-width: 750px;">
             <div class="modal-header">
                 <h3>SimplyFab Admin Panel & Management</h3>
                 <button class="close-modal" onclick="closeModals()">&times;</button>
             </div>
             <div class="modal-body">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px;">
                     <p class="github-sync-status" style="margin:0;"><span class="sync-dot"></span> Auto-sync active & published to GitHub repository.</p>
-                    <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem;" onclick="toggleGitHubConfig()">⚙️ GitHub Settings</button>
+                    <button class="btn btn-outline" style="padding: 2px 6px; font-size: 0.75rem;" onclick="toggleGitHubConfig()">⚙️ GitHub Settings</button>
                 </div>
                 
                 <!-- Toggleable GitHub Configuration Panel -->
-                <div id="github-config-panel" style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 10px 0; border: 1px solid #ddd; display: none;">
-                    <h5 style="margin-bottom: 8px;">⚙️ GitHub Repo Credentials</h5>
-                    <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-                        <input type="text" id="gh-username" placeholder="GitHub Username" style="flex:1;">
-                        <input type="text" id="gh-repo" placeholder="Repository Name" style="flex:1;">
+                <div id="github-config-panel" style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin: 8px 0; border: 1px solid #ddd; display: none;">
+                    <h5 style="margin-bottom: 6px; font-size: 0.85rem;">⚙️ GitHub Repo Credentials</h5>
+                    <div style="display: flex; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+                        <input type="text" id="gh-username" placeholder="GitHub Username" style="flex:1; min-width: 140px;">
+                        <input type="text" id="gh-repo" placeholder="Repository Name" style="flex:1; min-width: 140px;">
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="password" id="gh-token" placeholder="Personal Access Token" style="flex:3;">
-                        <button class="btn" onclick="saveGitHubConfig()" style="flex:1; font-size:0.8rem;">Save Config</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <input type="password" id="gh-token" placeholder="Personal Access Token" style="flex:3; min-width: 180px;">
+                        <button class="btn" onclick="saveGitHubConfig()" style="flex:1; font-size:0.75rem;">Save Config</button>
                     </div>
                 </div>
 
@@ -692,20 +785,20 @@
                     <div class="form-group">
                         <label id="file-input-label">Select Pictures (Upload multiple pictures: JPG, PNG, WEBP, etc.):</label>
                         <input type="file" id="item-files" accept="image/*" multiple>
-                        <small style="color:var(--gray); display:block; margin-top:4px;">Hold Ctrl or Cmd to select multiple pictures at once.</small>
+                        <small style="color:var(--gray); display:block; margin-top:3px;">Hold Ctrl / Cmd on PC or tap multiple photos on mobile.</small>
                     </div>
-                    <div style="display:flex; gap: 10px;">
+                    <div style="display:flex; gap: 8px; flex-wrap: wrap;">
                         <button type="submit" id="form-submit-btn" class="btn" style="flex:2;">Upload, Store & Publish to GitHub</button>
                         <button type="button" id="cancel-edit-btn" class="btn btn-outline" style="flex:1; display:none;" onclick="resetUploadForm()">Cancel Edit</button>
                     </div>
                 </form>
 
                 <!-- Management Table with Search/Filter -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
-                    <h4 style="margin:0;">Manage Existing Items</h4>
-                    <input type="text" id="admin-search-input" placeholder="🔍 Search by SKU or Name..." style="width: 250px; padding: 6px 10px; font-size: 0.85rem;" oninput="renderAdminTable()">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; flex-wrap: wrap; gap: 8px;">
+                    <h4 style="margin:0; font-size: 0.95rem;">Manage Existing Items</h4>
+                    <input type="text" id="admin-search-input" placeholder="🔍 Search SKU or Name..." style="width: 200px; padding: 5px 8px; font-size: 0.8rem;" oninput="renderAdminTable()">
                 </div>
-                <div style="max-height: 250px; overflow-y: auto; margin-top: 5px;">
+                <div class="admin-table-wrapper">
                     <table class="admin-table">
                         <thead>
                             <tr>
@@ -739,10 +832,11 @@
                 <button class="close-modal" onclick="closeModals()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="gallery-main-view">
+                <div class="gallery-main-view" onclick="openLightbox(document.getElementById('gallery-active-img').src)">
                     <img id="gallery-active-img" src="" alt="Expanded View">
+                    <div class="zoom-instruction">🔍 Tap/Click to Zoom In</div>
                 </div>
-                <p style="margin-bottom: 10px; font-weight: 600; font-size: 0.9rem;">All Uploaded Photos for this Item:</p>
+                <p style="margin-bottom: 8px; font-weight: 600; font-size: 0.85rem;">All Uploaded Photos for this Item (Tap to preview):</p>
                 <div id="gallery-thumbs-container" class="gallery-thumbs-row">
                     <!-- Thumbnails generated dynamically -->
                 </div>
@@ -750,9 +844,14 @@
         </div>
     </div>
 
+    <!-- Fullscreen Image Zoom Lightbox Modal -->
+    <div id="lightbox-modal" onclick="closeLightbox()">
+        <img id="lightbox-img-el" src="" alt="Zoomed View">
+    </div>
+
     <!-- Cart / Checkout Modal -->
     <div id="cart-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
                 <h3>Shopping Cart & Inquiry</h3>
                 <button class="close-modal" onclick="closeModals()">&times;</button>
@@ -761,12 +860,12 @@
                 <div id="cart-items-container">
                     <div class="empty-state">Your cart is empty.</div>
                 </div>
-                <hr style="margin: 1.5rem 0; border:0; border-top: 1px solid #ddd;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <hr style="margin: 1.2rem 0; border:0; border-top: 1px solid #ddd;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
                     <strong>Total:</strong>
-                    <span id="cart-total-price" style="font-size: 1.3rem; font-weight: bold; color: var(--primary-dark);">₱0.00</span>
+                    <span id="cart-total-price" style="font-size: 1.2rem; font-weight: bold; color: var(--primary-dark);">₱0.00</span>
                 </div>
-                <a href="#" id="messenger-checkout-btn" target="_blank" class="btn btn-messenger" style="width: 100%; padding: 12px; font-size: 1rem; display: none;">
+                <a href="#" id="messenger-checkout-btn" target="_blank" class="btn btn-messenger" style="width: 100%; padding: 11px; font-size: 0.95rem; display: none;">
                     💬 Inquiry & Purchase via Facebook Messenger
                 </a>
             </div>
@@ -790,9 +889,9 @@
                 category: "casual", 
                 price: 1499.00, 
                 images: [
-                    "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=600&q=80",
-                    "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=600&q=80",
-                    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=600&q=80"
+                    "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=800&q=80"
                 ] 
             }
         ];
@@ -1005,6 +1104,18 @@
             document.getElementById('gallery-modal').style.display = 'flex';
         }
 
+        function openLightbox(imgUrl) {
+            if(!imgUrl) return;
+            const lightbox = document.getElementById('lightbox-modal');
+            const lightboxImg = document.getElementById('lightbox-img-el');
+            lightboxImg.src = imgUrl;
+            lightbox.style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').style.display = 'none';
+        }
+
         function openAdminLoginModal() {
             closeModals();
             document.getElementById('admin-login-modal').style.display = 'flex';
@@ -1066,8 +1177,8 @@
                     <td>${product.images.length} photos</td>
                     <td>
                         <div style="display:flex; gap:5px;">
-                            <button class="btn btn-edit" style="padding:4px 8px; font-size:0.75rem;" onclick="startEditItem(${product.id})">Edit</button>
-                            <button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteItem(${product.id})">Delete</button>
+                            <button class="btn btn-edit" style="padding:3px 6px; font-size:0.7rem;" onclick="startEditItem(${product.id})">Edit</button>
+                            <button class="btn btn-danger" style="padding:3px 6px; font-size:0.7rem;" onclick="deleteItem(${product.id})">Delete</button>
                         </div>
                     </td>
                 `;
@@ -1174,7 +1285,7 @@
                     name: name,
                     category: category,
                     price: price,
-                    images: storedImageUrls.length > 0 ? storedImageUrls : ["https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=600&q=80"]
+                    images: storedImageUrls.length > 0 ? storedImageUrls : ["https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80"]
                 };
 
                 products.push(newItem);
@@ -1270,7 +1381,7 @@
                                 <small style="color:var(--gray);">${item.sku} | ₱${item.price.toFixed(2)}</small>
                             </div>
                         </div>
-                        <button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.8rem;" onclick="removeFromCart(${index})">Remove</button>
+                        <button class="btn btn-outline" style="padding: 3px 6px; font-size: 0.75rem;" onclick="removeFromCart(${index})">Remove</button>
                     `;
                     container.appendChild(div);
                 });
@@ -1294,6 +1405,7 @@
 
         function closeModals() {
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            closeLightbox();
         }
 
         window.onload = function() {
