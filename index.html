@@ -826,14 +826,14 @@
             toggleGitHubConfig();
         }
 
-        // Commit file safely to GitHub with automatic SHA lookup
+        // Commit file safely to GitHub with automatic SHA lookup and main branch target
         async function commitFileToGitHub(path, base64Content, commitMessage) {
             if (!ghConfig.token || !ghConfig.username || !ghConfig.repo) return false;
 
             const url = `https://api.github.com/repos/${ghConfig.username}/${ghConfig.repo}/contents/${path}`;
             try {
                 let sha = null;
-                const getRes = await fetch(url, {
+                const getRes = await fetch(`${url}?ref=main`, {
                     headers: { "Authorization": `token ${ghConfig.token}` }
                 });
                 if (getRes.ok) {
@@ -850,13 +850,20 @@
                     body: JSON.stringify({
                         message: commitMessage,
                         content: base64Content,
-                        sha: sha
+                        sha: sha,
+                        branch: "main"
                     })
                 });
 
-                return putRes.ok;
+                if (!putRes.ok) {
+                    const errData = await putRes.json();
+                    console.error("GitHub Commit Error Details:", errData);
+                    return false;
+                }
+
+                return true;
             } catch (err) {
-                console.error("GitHub API Error:", err);
+                console.error("GitHub API Exception:", err);
                 return false;
             }
         }
@@ -869,8 +876,13 @@
 
             const filePath = "data/products.json";
             const jsonContent = btoa(unescape(encodeURIComponent(JSON.stringify(products, null, 2))));
-            await commitFileToGitHub(filePath, jsonContent, `SimplyFab Sync: ${actionDescription}`);
-            logActivity(`[GitHub Published]: Data stream committed to ${ghConfig.repo}/${filePath}`);
+            const success = await commitFileToGitHub(filePath, jsonContent, `SimplyFab Sync: ${actionDescription}`);
+            
+            if (success) {
+                logActivity(`[GitHub Published]: Data stream committed to ${ghConfig.repo}/${filePath}`);
+            } else {
+                logActivity(`[GitHub Error]: Failed to commit products.json to repository.`);
+            }
         }
 
         function logActivity(action) {
@@ -1073,7 +1085,6 @@
             return prefix + String(maxNum + 1).padStart(4, '0');
         }
 
-        // Helper function to read file as base64 promise
         function readFileAsDataURL(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -1108,13 +1119,13 @@
 
             let storedImageUrls = [];
             if (existingProduct) {
-                storedImageUrls = [...existingProduct.images]; // keep old images by default
+                storedImageUrls = [...existingProduct.images];
             }
 
             if (fileInput.files && fileInput.files.length > 0) {
                 const files = Array.from(fileInput.files);
                 if (!existingProduct) {
-                    storedImageUrls = []; // new item starts fresh
+                    storedImageUrls = [];
                 }
 
                 for (let index = 0; index < files.length; index++) {
@@ -1131,10 +1142,11 @@
                         const fileNumber = existingProduct ? existingProduct.images.length + index + 1 : index + 1;
                         const filePath = `images/${category}/${targetSku}_${fileNumber}.${ext}`;
                         
-                        await commitFileToGitHub(filePath, base64Data, `Upload image for ${targetSku}`);
-                        const rawGitHubUrl = `https://raw.githubusercontent.com/${ghConfig.username}/${ghConfig.repo}/main/${filePath}`;
-                        
-                        storedImageUrls.push(rawGitHubUrl);
+                        const success = await commitFileToGitHub(filePath, base64Data, `Upload image for ${targetSku}`);
+                        if (success) {
+                            const rawGitHubUrl = `https://raw.githubusercontent.com/${ghConfig.username}/${ghConfig.repo}/main/${filePath}`;
+                            storedImageUrls.push(rawGitHubUrl);
+                        }
                     } catch(err) {
                         console.error("Error processing file:", err);
                     }
@@ -1157,7 +1169,7 @@
                 products.push(newItem);
                 logActivity(`Uploaded new item [${targetSku}] "${name}" with ${newItem.images.length} pictures.`);
                 await syncToGitHubRepo(`Published item ${targetSku}`);
-                alert(`Item successfully uploaded, stored in [images/${category}/], and published! SKU: ${targetSku}`);
+                alert(`Item successfully uploaded, stored in GitHub [images/${category}/], and published! SKU: ${targetSku}`);
                 resetUploadForm();
                 renderProducts('all');
             }
