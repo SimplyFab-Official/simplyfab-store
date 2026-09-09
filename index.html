@@ -1220,8 +1220,9 @@
                 </form>
 
                 <!-- Manual Invoicing & Sales Monitoring Section -->
-                <h4 class="admin-section-title">🧾 Manual Customer Invoicing & Sales Reports</h4>
+                <h4 class="admin-section-title" id="invoice-form-title">🧾 Manual Customer Invoicing & Sales Reports</h4>
                 <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1rem;">
+                    <input type="hidden" id="edit-invoice-id" value="">
                     <div style="display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
                         <div style="flex:1; min-width: 180px;">
                             <label style="font-size:0.8rem; font-weight:600;">Customer Name:</label>
@@ -1279,7 +1280,10 @@
                         <div>Balance Due: <strong id="sum-balance" style="color:var(--danger);">₱0.00</strong></div>
                     </div>
 
-                    <button class="btn" style="width: 100%;" onclick="generateAndSaveInvoice()">📄 Generate Official Invoice & Record Sale</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn" style="flex:2;" id="inv-submit-btn" onclick="generateAndSaveInvoice()">📄 Generate Official Invoice & Record Sale</button>
+                        <button class="btn btn-outline" style="flex:1; display:none;" id="inv-cancel-btn" onclick="resetInvoiceForm()">Cancel Edit</button>
+                    </div>
                 </div>
 
                 <!-- Sales Summary Metrics -->
@@ -1391,6 +1395,11 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <div style="margin-bottom: 15px; font-size: 0.82rem; background: #fff8e1; padding: 8px; border-radius: 4px; border: 1px solid #ffe0b2;" id="receipt-partial-history-box">
+                        <strong>Payment History / Downpayment:</strong>
+                        <div id="receipt-partial-text">No partial payments recorded.</div>
+                    </div>
 
                     <div style="display: flex; justify-content: flex-end; font-size: 0.85rem; margin-bottom: 15px;">
                         <div style="width: 240px; display: flex; flex-direction: column; gap: 4px;">
@@ -1974,7 +1983,7 @@
             });
         }
 
-        /* Manual Invoicing Logic */
+        /* Manual Invoicing & Payment Completion Logic */
         function populateInvoiceItemDropdown() {
             const select = document.getElementById('inv-item-select');
             select.innerHTML = '';
@@ -2004,7 +2013,7 @@
             const downpayment = parseFloat(document.getElementById('inv-downpayment').value) || 0;
 
             const subtotal = unitPrice * qty;
-            const vat = subtotal * 0.12; // Philippine VAT 12% included or standard calculation
+            const vat = subtotal * 0.12; 
             const total = subtotal + vat;
             const balance = Math.max(0, total - downpayment);
 
@@ -2022,6 +2031,7 @@
         }
 
         function generateAndSaveInvoice() {
+            const editId = document.getElementById('edit-invoice-id').value;
             const custName = document.getElementById('inv-cust-name').value.trim();
             const custAddress = document.getElementById('inv-cust-address').value.trim();
             const select = document.getElementById('inv-item-select');
@@ -2044,11 +2054,77 @@
             const product = products.find(p => p.id == productId);
             const unitPrice = parseFloat(document.getElementById('inv-unit-price').value) || 0;
             const totals = calcInvoiceTotals();
+            const currentDateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
+            if (editId) {
+                // Updating existing invoice or completing payment
+                const existingInv = invoices.find(i => i.id == editId);
+                if (existingInv) {
+                    existingInv.customerName = custName;
+                    existingInv.customerAddress = custAddress;
+                    existingInv.paymentMethod = payMethod;
+                    existingInv.qty = qty;
+                    existingInv.unitPrice = unitPrice;
+                    existingInv.subtotal = totals.subtotal;
+                    existingInv.vat = totals.vat;
+                    existingInv.total = totals.total;
+                    
+                    let newlyCompleted = false;
+                    if (existingInv.status !== 'Completed' && status === 'Completed') {
+                        newlyCompleted = true;
+                    }
+
+                    existingInv.downpayment = totals.total; // Fully paid upon completion
+                    existingInv.balance = 0;
+                    existingInv.status = 'Completed';
+
+                    if (!existingInv.history) existingInv.history = [];
+                    existingInv.history.push({
+                        date: currentDateStr,
+                        amountPaid: totals.total - existingInv.downpayment,
+                        note: `Completed remaining balance of ₱${(totals.total - existingInv.downpayment).toFixed(2)}`
+                    });
+
+                    if (newlyCompleted) {
+                        // Generate a new completion invoice number for audit trail
+                        const newCompletionInvNum = generateUniqueInvoiceNumber();
+                        const completionInv = {
+                            id: Date.now() + 1,
+                            invNumber: newCompletionInvNum,
+                            date: currentDateStr,
+                            customerName: custName,
+                            customerAddress: custAddress,
+                            itemSku: product ? product.sku : 'SF-ITEM',
+                            itemName: product ? product.name : 'Custom Item',
+                            qty: qty,
+                            unitPrice: unitPrice,
+                            subtotal: totals.subtotal,
+                            vat: totals.vat,
+                            total: totals.total,
+                            downpayment: totals.total,
+                            balance: 0,
+                            paymentMethod: payMethod,
+                            status: 'Completed',
+                            history: [{ date: currentDateStr, amountPaid: totals.total, note: `Final payment completion linked from ${existingInv.invNumber}` }]
+                        };
+                        invoices.push(completionInv);
+                        alert(`Order completed! New Completion Invoice Number generated: ${newCompletionInvNum}`);
+                    }
+
+                    logActivity(`Updated and completed invoice ${existingInv.invNumber}`);
+                    syncToGitHubRepo(`Updated invoice ${existingInv.invNumber}`);
+                    resetInvoiceForm();
+                    renderInvoicesTable();
+                    openInvoiceReceiptModal(existingInv.id);
+                    return;
+                }
+            }
+
+            // Creating new invoice
             const newInvoice = {
                 id: Date.now(),
                 invNumber: generateUniqueInvoiceNumber(),
-                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                date: currentDateStr,
                 customerName: custName,
                 customerAddress: custAddress,
                 itemSku: product ? product.sku : 'SF-ITEM',
@@ -2061,7 +2137,8 @@
                 downpayment: downpayment,
                 balance: totals.balance,
                 paymentMethod: payMethod,
-                status: status
+                status: status,
+                history: downpayment > 0 ? [{ date: currentDateStr, amountPaid: downpayment, note: `Initial downpayment via ${payMethod}` }] : []
             };
 
             invoices.push(newInvoice);
@@ -2071,6 +2148,47 @@
             renderInvoicesTable();
             openInvoiceReceiptModal(newInvoice.id);
             alert(`Invoice ${newInvoice.invNumber} successfully generated and recorded!`);
+            resetInvoiceForm();
+        }
+
+        function editInvoice(invoiceId) {
+            const inv = invoices.find(i => i.id == invoiceId);
+            if(!inv) return;
+
+            document.getElementById('edit-invoice-id').value = inv.id;
+            document.getElementById('inv-cust-name').value = inv.customerName;
+            document.getElementById('inv-cust-address').value = inv.customerAddress;
+            document.getElementById('inv-pay-method').value = inv.paymentMethod;
+            document.getElementById('inv-status').value = inv.status;
+            document.getElementById('inv-qty').value = inv.qty;
+            document.getElementById('inv-downpayment').value = inv.downpayment;
+
+            const select = document.getElementById('inv-item-select');
+            for(let opt of select.options) {
+                if(opt.text.includes(inv.itemSku)) {
+                    select.value = opt.value;
+                    break;
+                }
+            }
+            updateInvoiceItemPrice();
+
+            document.getElementById('invoice-form-title').innerText = `✏️ Edit / Complete Payment for Invoice: ${inv.invNumber}`;
+            document.getElementById('inv-submit-btn').innerText = `💾 Save Changes & Complete Payment`;
+            document.getElementById('inv-cancel-btn').style.display = 'block';
+            document.getElementById('invoice-form-title').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetInvoiceForm() {
+            document.getElementById('edit-invoice-id').value = '';
+            document.getElementById('inv-cust-name').value = '';
+            document.getElementById('inv-cust-address').value = '';
+            document.getElementById('inv-qty').value = '1';
+            document.getElementById('inv-downpayment').value = '0';
+            document.getElementById('inv-status').value = 'Pending';
+            document.getElementById('invoice-form-title').innerText = `🧾 Manual Customer Invoicing & Sales Reports`;
+            document.getElementById('inv-submit-btn').innerText = `📄 Generate Official Invoice & Record Sale`;
+            document.getElementById('inv-cancel-btn').style.display = 'none';
+            updateInvoiceItemPrice();
         }
 
         function renderInvoicesTable() {
@@ -2099,7 +2217,10 @@
                         <td>₱${inv.balance.toFixed(2)}</td>
                         <td><span style="color:${inv.status === 'Completed' ? 'var(--edit)' : 'var(--danger)'}; font-weight:bold;">${inv.status}</span></td>
                         <td>
-                            <button class="btn btn-outline" style="padding:2px 6px; font-size:0.7rem;" onclick="openInvoiceReceiptModal(${inv.id})">View</button>
+                            <div style="display:flex; gap:4px;">
+                                <button class="btn btn-outline" style="padding:2px 6px; font-size:0.7rem;" onclick="openInvoiceReceiptModal(${inv.id})">View</button>
+                                <button class="btn btn-edit" style="padding:2px 6px; font-size:0.7rem;" onclick="editInvoice(${inv.id})">Edit</button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -2129,6 +2250,18 @@
             document.getElementById('receipt-qty').innerText = inv.qty;
             document.getElementById('receipt-unit-price').innerText = `₱${inv.unitPrice.toFixed(2)}`;
             document.getElementById('receipt-subtotal').innerText = `₱${(inv.unitPrice * inv.qty).toFixed(2)}`;
+
+            // Render partial history
+            const historyBox = document.getElementById('receipt-partial-text');
+            if(inv.history && inv.history.length > 0) {
+                let historyHtml = '';
+                inv.history.forEach(h => {
+                    historyHtml += `<div>• ${h.date}: Paid <strong>₱${h.amountPaid.toFixed(2)}</strong> (${h.note})</div>`;
+                });
+                historyBox.innerHTML = historyHtml;
+            } else {
+                historyBox.innerHTML = `No partial payments recorded.`;
+            }
 
             document.getElementById('receipt-calc-subtotal').innerText = `₱${inv.subtotal.toFixed(2)}`;
             document.getElementById('receipt-calc-vat').innerText = `₱${inv.vat.toFixed(2)}`;
