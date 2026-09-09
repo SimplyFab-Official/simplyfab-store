@@ -869,11 +869,8 @@
 
             const filePath = "data/products.json";
             const jsonContent = btoa(unescape(encodeURIComponent(JSON.stringify(products, null, 2))));
-            const success = await commitFileToGitHub(filePath, jsonContent, `SimplyFab Sync: ${actionDescription}`);
-            
-            if (success) {
-                logActivity(`[GitHub Published]: Data stream successfully committed to ${ghConfig.repo}/${filePath}`);
-            }
+            await commitFileToGitHub(filePath, jsonContent, `SimplyFab Sync: ${actionDescription}`);
+            logActivity(`[GitHub Published]: Data stream committed to ${ghConfig.repo}/${filePath}`);
         }
 
         function logActivity(action) {
@@ -1076,6 +1073,16 @@
             return prefix + String(maxNum + 1).padStart(4, '0');
         }
 
+        // Helper function to read file as base64 promise
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
         async function handleItemUpload(event) {
             event.preventDefault();
             const editId = document.getElementById('edit-item-id').value;
@@ -1084,115 +1091,81 @@
             const price = parseFloat(document.getElementById('item-price').value);
             const fileInput = document.getElementById('item-files');
 
+            let targetSku = "";
+            let existingProduct = null;
+
             if (editId) {
-                const product = products.find(p => p.id == editId);
-                if (product) {
-                    product.name = name;
-                    product.category = category;
-                    product.price = price;
-
-                    if (fileInput.files && fileInput.files.length > 0) {
-                        const uniqueSku = product.sku;
-                        const files = Array.from(fileInput.files);
-                        let storedImageUrls = [];
-                        let completedUploads = 0;
-
-                        files.forEach((file, index) => {
-                            const reader = new FileReader();
-                            reader.onload = async function(e) {
-                                try {
-                                    const base64Full = e.target.result;
-                                    const base64Data = base64Full.split(',')[1];
-                                    
-                                    let ext = file.name.split('.').pop().toLowerCase();
-                                    if (!['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'].includes(ext)) {
-                                        ext = 'jpg';
-                                    }
-
-                                    const filePath = `images/${category}/${uniqueSku}_${index + 1}.${ext}`;
-                                    
-                                    await commitFileToGitHub(filePath, base64Data, `Update image for ${uniqueSku}`);
-                                    const rawGitHubUrl = `https://raw.githubusercontent.com/${ghConfig.username}/${ghConfig.repo}/main/${filePath}`;
-                                    
-                                    storedImageUrls[index] = rawGitHubUrl;
-                                } catch(err) {
-                                    console.error("Error processing file:", err);
-                                    storedImageUrls[index] = e.target.result;
-                                }
-
-                                completedUploads++;
-                                if (completedUploads === files.length) {
-                                    product.images = storedImageUrls;
-                                    finalizeUpdate(product);
-                                }
-                            };
-                            reader.readAsDataURL(file);
-                        });
-                    } else {
-                        finalizeUpdate(product);
-                    }
+                existingProduct = products.find(p => p.id == editId);
+                if (existingProduct) {
+                    targetSku = existingProduct.sku;
+                    existingProduct.name = name;
+                    existingProduct.category = category;
+                    existingProduct.price = price;
                 }
             } else {
-                if (!fileInput.files || fileInput.files.length === 0) {
-                    alert("Please select at least one picture.");
-                    return;
+                targetSku = generateUniqueSKU(category);
+            }
+
+            let storedImageUrls = [];
+            if (existingProduct) {
+                storedImageUrls = [...existingProduct.images]; // keep old images by default
+            }
+
+            if (fileInput.files && fileInput.files.length > 0) {
+                const files = Array.from(fileInput.files);
+                if (!existingProduct) {
+                    storedImageUrls = []; // new item starts fresh
                 }
 
-                const uniqueSku = generateUniqueSKU(category);
-                const files = Array.from(fileInput.files);
-                let storedImageUrls = [];
-                let completedUploads = 0;
-
-                files.forEach((file, index) => {
-                    const reader = new FileReader();
-                    reader.onload = async function(e) {
-                        try {
-                            const base64Full = e.target.result;
-                            const base64Data = base64Full.split(',')[1];
-
-                            let ext = file.name.split('.').pop().toLowerCase();
-                            if (!['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'].includes(ext)) {
-                                ext = 'jpg';
-                            }
-
-                            const filePath = `images/${category}/${uniqueSku}_${index + 1}.${ext}`;
-
-                            await commitFileToGitHub(filePath, base64Data, `Store picture for ${uniqueSku}`);
-                            const rawGitHubUrl = `https://raw.githubusercontent.com/${ghConfig.username}/${ghConfig.repo}/main/${filePath}`;
-
-                            storedImageUrls[index] = rawGitHubUrl;
-                        } catch(err) {
-                            console.error("Error processing file:", err);
-                            storedImageUrls[index] = e.target.result;
+                for (let index = 0; index < files.length; index++) {
+                    const file = files[index];
+                    try {
+                        const base64Full = await readFileAsDataURL(file);
+                        const base64Data = base64Full.split(',')[1];
+                        
+                        let ext = file.name.split('.').pop().toLowerCase();
+                        if (!['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'].includes(ext)) {
+                            ext = 'jpg';
                         }
 
-                        completedUploads++;
-                        if (completedUploads === files.length) {
-                            const newItem = {
-                                id: Date.now(),
-                                sku: uniqueSku,
-                                name: name,
-                                category: category,
-                                price: price,
-                                images: storedImageUrls
-                            };
+                        const fileNumber = existingProduct ? existingProduct.images.length + index + 1 : index + 1;
+                        const filePath = `images/${category}/${targetSku}_${fileNumber}.${ext}`;
+                        
+                        await commitFileToGitHub(filePath, base64Data, `Upload image for ${targetSku}`);
+                        const rawGitHubUrl = `https://raw.githubusercontent.com/${ghConfig.username}/${ghConfig.repo}/main/${filePath}`;
+                        
+                        storedImageUrls.push(rawGitHubUrl);
+                    } catch(err) {
+                        console.error("Error processing file:", err);
+                    }
+                }
+            }
 
-                            products.push(newItem);
-                            logActivity(`Uploaded new item [${uniqueSku}] "${name}" with ${storedImageUrls.length} pictures.`);
-                            syncToGitHubRepo(`Published item ${uniqueSku} with category stored images.`);
-                            alert(`Item successfully uploaded, stored in [images/${category}/], and published! SKU: ${uniqueSku}`);
-                            resetUploadForm();
-                            renderProducts('all');
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                });
+            if (existingProduct) {
+                existingProduct.images = storedImageUrls;
+                finalizeUpdate(existingProduct);
+            } else {
+                const newItem = {
+                    id: Date.now(),
+                    sku: targetSku,
+                    name: name,
+                    category: category,
+                    price: price,
+                    images: storedImageUrls.length > 0 ? storedImageUrls : ["https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=600&q=80"]
+                };
+
+                products.push(newItem);
+                logActivity(`Uploaded new item [${targetSku}] "${name}" with ${newItem.images.length} pictures.`);
+                await syncToGitHubRepo(`Published item ${targetSku}`);
+                alert(`Item successfully uploaded, stored in [images/${category}/], and published! SKU: ${targetSku}`);
+                resetUploadForm();
+                renderProducts('all');
             }
         }
 
-        function finalizeUpdate(product) {
+        async function finalizeUpdate(product) {
             logActivity(`Updated item [${product.sku}] "${product.name}".`);
-            syncToGitHubRepo(`Updated item ${product.sku}`);
+            await syncToGitHubRepo(`Updated item ${product.sku}`);
             alert(`Item ${product.sku} updated and published successfully!`);
             resetUploadForm();
             renderProducts('all');
