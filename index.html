@@ -373,6 +373,26 @@
             z-index: 2;
         }
 
+        /* Out of Stock Overlay Badge */
+        .badge-outstock {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
         .card-thumbnails {
             display: flex;
             gap: 6px;
@@ -433,6 +453,44 @@
             text-decoration: line-through;
             color: var(--gray);
             margin-right: 6px;
+        }
+
+        /* Size Selector Row on Product Card */
+        .size-selector-container {
+            margin-bottom: 10px;
+        }
+
+        .size-selector-container label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 3px;
+        }
+
+        .size-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .size-btn {
+            flex: 1;
+            background: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 4px 0;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            color: var(--dark);
+            transition: all 0.2s;
+        }
+
+        .size-btn:hover, .size-btn.active {
+            background: var(--primary-dark);
+            color: white;
+            border-color: var(--primary-dark);
         }
 
         /* Likes & Community Bar on Card */
@@ -497,6 +555,14 @@
 
         .btn-messenger:hover {
             background: #006dd6;
+        }
+
+        .btn-disabled {
+            background: #e9ecef !important;
+            color: #adb5bd !important;
+            border-color: #dee2e6 !important;
+            cursor: not-allowed !important;
+            pointer-events: none;
         }
 
         /* Floating Community Chat Widget */
@@ -1089,13 +1155,28 @@
                         </div>
                     </div>
 
-                    <!-- Promo & New Arrival Checkboxes -->
+                    <!-- Available Sizes Checkboxes for Admin -->
+                    <div class="form-group">
+                        <label>Available Sizes for Item:</label>
+                        <div style="display: flex; gap: 15px; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #ddd; flex-wrap: wrap;">
+                            <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="S" checked> S</label>
+                            <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="M" checked> M</label>
+                            <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="L" checked> L</label>
+                            <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="XL" checked> XL</label>
+                            <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="XXL" checked> XXL</label>
+                        </div>
+                    </div>
+
+                    <!-- Promo, New Arrival & Out of Stock Checkboxes -->
                     <div style="display: flex; gap: 20px; margin-bottom: 1rem; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #ddd; flex-wrap: wrap;">
                         <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
-                            <input type="checkbox" id="item-isnew" style="width: 16px; height: 16px;"> ✨ Mark as New Arrival (Flashing Badge)
+                            <input type="checkbox" id="item-isnew" style="width: 16px; height: 16px;"> ✨ New Arrival
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
-                            <input type="checkbox" id="item-issale" style="width: 16px; height: 16px;"> 🔥 Mark on Sale / Promo
+                            <input type="checkbox" id="item-issale" style="width: 16px; height: 16px;"> 🔥 On Sale
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--danger);">
+                            <input type="checkbox" id="item-isoutstock" style="width: 16px; height: 16px;"> ❌ Out of Stock
                         </label>
                     </div>
 
@@ -1223,8 +1304,10 @@
                 category: "casual", 
                 price: 1499.00, 
                 salePrice: 1199.00,
+                sizes: ['S', 'M', 'L', 'XL', 'XXL'],
                 isNew: true,
                 isSale: true,
+                isOutStock: false,
                 likes: 24,
                 comments: [
                     { name: "Angela S.", text: "Super gorgeous fabric and fits perfectly!" },
@@ -1248,6 +1331,7 @@
 
         let cart = [];
         let activeGalleryProductId = null;
+        let selectedSizes = {};
 
         // Initialize Visitor Hype Stats
         let visits = parseInt(localStorage.getItem('simplyfab_total_visits')) || 1248;
@@ -1376,11 +1460,15 @@
                 });
 
                 let badgeHtml = '';
-                if (product.isNew) {
-                    badgeHtml += `<span class="badge-new">✨ New Arrival</span>`;
-                }
-                if (product.isSale) {
-                    badgeHtml += `<span class="badge-sale">🔥 SALE</span>`;
+                if (product.isOutStock) {
+                    badgeHtml += `<div class="badge-outstock">❌ Out of Stock</div>`;
+                } else {
+                    if (product.isNew) {
+                        badgeHtml += `<span class="badge-new">✨ New Arrival</span>`;
+                    }
+                    if (product.isSale) {
+                        badgeHtml += `<span class="badge-sale">🔥 SALE</span>`;
+                    }
                 }
 
                 let priceHtml = '';
@@ -1394,9 +1482,22 @@
                     priceHtml = `<span class="product-price">₱${product.price.toLocaleString('en-PH', {minimumFractionDigits: 2})}</span>`;
                 }
 
+                const productSizes = product.sizes && product.sizes.length > 0 ? product.sizes : ['S', 'M', 'L', 'XL', 'XXL'];
+                if (!selectedSizes[product.id] || !productSizes.includes(selectedSizes[product.id])) {
+                    selectedSizes[product.id] = productSizes[0];
+                }
+                const currentSize = selectedSizes[product.id];
+
+                let sizeButtonsHtml = '';
+                productSizes.forEach(sz => {
+                    sizeButtonsHtml += `<button type="button" class="size-btn ${currentSize === sz ? 'active' : ''}" ${product.isOutStock ? 'disabled' : ''} onclick="selectProductSize(event, ${product.id}, '${sz}')">${sz}</button>`;
+                });
+
                 const likeCount = product.likes || 0;
                 const commentCount = product.comments ? product.comments.length : 0;
-                const inquiryText = `Hi SimplyFab! I would like to inquire about item ${product.sku} - ${product.name} priced at ₱${activePrice.toFixed(2)}`;
+                const inquiryText = product.isOutStock 
+                    ? `Hi SimplyFab! I would like to inquire when item ${product.sku} - ${product.name} will be restocked.`
+                    : `Hi SimplyFab! I would like to inquire about item ${product.sku} - ${product.name} (Size: ${currentSize}) priced at ₱${activePrice.toFixed(2)}`;
                 const singleItemMessengerUrl = `https://www.facebook.com/messages/t/110124887067313?text=` + encodeURIComponent(inquiryText);
 
                 const card = document.createElement('div');
@@ -1415,21 +1516,49 @@
                         <div>
                             <div class="product-title">${product.name}</div>
                             <div class="product-price-box">${priceHtml}</div>
+                            <div class="size-selector-container">
+                                <label>${product.isOutStock ? 'Sizes (Unavailable):' : 'Select Size:'}</label>
+                                <div class="size-buttons" id="size-group-${product.id}">
+                                    ${sizeButtonsHtml}
+                                </div>
+                            </div>
                             <div class="card-social-bar">
                                 <button class="like-btn" onclick="likeProduct(${product.id})">❤️ ${likeCount} Likes</button>
                                 <span>💬 ${commentCount} Reviews</span>
                             </div>
                         </div>
                         <div class="product-actions">
-                            <button class="btn-cart" onclick="addToCart(${product.id})">Add to Cart</button>
-                            <a href="${singleItemMessengerUrl}" target="_blank" class="btn btn-messenger">
-                                💬 Inquiry
+                            <button class="btn-cart ${product.isOutStock ? 'btn-disabled' : ''}" ${product.isOutStock ? 'disabled' : ''} onclick="addToCart(${product.id})">${product.isOutStock ? 'Out of Stock' : 'Add to Cart'}</button>
+                            <a href="${singleItemMessengerUrl}" id="messenger-link-${product.id}" target="_blank" class="btn btn-messenger">
+                                💬 ${product.isOutStock ? 'Inquire Restock' : 'Inquiry'}
                             </a>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
+        }
+
+        function selectProductSize(event, productId, size) {
+            event.stopPropagation();
+            selectedSizes[productId] = size;
+            const group = document.getElementById(`size-group-${productId}`);
+            if (group) {
+                group.querySelectorAll('.size-btn').forEach(btn => {
+                    if (btn.innerText === size) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+            const product = products.find(p => p.id === productId);
+            const messengerBtn = document.getElementById(`messenger-link-${productId}`);
+            if (product && messengerBtn && !product.isOutStock) {
+                const activePrice = (product.isSale && product.salePrice) ? product.salePrice : product.price;
+                const inquiryText = `Hi SimplyFab! I would like to inquire about item ${product.sku} - ${product.name} (Size: ${size}) priced at ₱${activePrice.toFixed(2)}`;
+                messengerBtn.href = `https://www.facebook.com/messages/t/110124887067313?text=` + encodeURIComponent(inquiryText);
+            }
         }
 
         function likeProduct(productId) {
@@ -1482,7 +1611,6 @@
                 thumbsContainer.appendChild(thumbDiv);
             });
 
-            // Render comments
             commentsContainer.innerHTML = '';
             if(!product.comments || product.comments.length === 0) {
                 commentsContainer.innerHTML = `<div style="color:var(--gray); text-align:center; padding: 10px;">No reviews yet. Be the first to add one!</div>`;
@@ -1627,6 +1755,7 @@
             filteredProducts.forEach(product => {
                 const activePrice = (product.isSale && product.salePrice) ? product.salePrice : product.price;
                 let badgeText = [];
+                if(product.isOutStock) badgeText.push("❌ Out of Stock");
                 if(product.isNew) badgeText.push("✨ New");
                 if(product.isSale) badgeText.push("🔥 Sale");
 
@@ -1680,7 +1809,12 @@
             const salePrice = salePriceInput ? parseFloat(salePriceInput) : null;
             const isNew = document.getElementById('item-isnew').checked;
             const isSale = document.getElementById('item-issale').checked;
+            const isOutStock = document.getElementById('item-isoutstock').checked;
             const fileInput = document.getElementById('item-files');
+
+            const selectedCheckboxes = document.querySelectorAll('input[name="admin-size"]:checked');
+            let itemSizes = Array.from(selectedCheckboxes).map(cb => cb.value);
+            if(itemSizes.length === 0) itemSizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
             if (!ghConfig.token) {
                 alert("Please configure your GitHub Personal Access Token in '⚙️ GitHub Settings' first!");
@@ -1699,8 +1833,10 @@
                     existingProduct.category = category;
                     existingProduct.price = price;
                     existingProduct.salePrice = salePrice;
+                    existingProduct.sizes = itemSizes;
                     existingProduct.isNew = isNew;
                     existingProduct.isSale = isSale;
+                    existingProduct.isOutStock = isOutStock;
                 }
             } else {
                 targetSku = generateUniqueSKU(category);
@@ -1755,8 +1891,10 @@
                     category: category,
                     price: price,
                     salePrice: salePrice,
+                    sizes: itemSizes,
                     isNew: isNew,
                     isSale: isSale,
+                    isOutStock: isOutStock,
                     likes: 1,
                     comments: [{ name: "SimplyFab Admin", text: "New arrival published!" }],
                     images: storedImageUrls.length > 0 ? storedImageUrls : ["https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80"]
@@ -1789,6 +1927,13 @@
             document.getElementById('item-saleprice').value = product.salePrice || '';
             document.getElementById('item-isnew').checked = !!product.isNew;
             document.getElementById('item-issale').checked = !!product.isSale;
+            document.getElementById('item-isoutstock').checked = !!product.isOutStock;
+
+            const productSizes = product.sizes || ['S', 'M', 'L', 'XL', 'XXL'];
+            document.querySelectorAll('input[name="admin-size"]').forEach(cb => {
+                cb.checked = productSizes.includes(cb.value);
+            });
+
             document.getElementById('form-heading').innerText = `Edit Item: ${product.sku}`;
             document.getElementById('form-submit-btn').innerText = `Save Changes & Publish`;
             document.getElementById('cancel-edit-btn').style.display = 'block';
@@ -1797,6 +1942,7 @@
 
         function resetUploadForm() {
             document.getElementById('upload-form').reset();
+            document.querySelectorAll('input[name="admin-size"]').forEach(cb => cb.checked = true);
             document.getElementById('edit-item-id').value = '';
             document.getElementById('form-heading').innerText = 'Upload New Item';
             document.getElementById('form-submit-btn').innerText = 'Upload, Store & Publish to GitHub';
@@ -1818,10 +1964,12 @@
 
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
-            if(product) {
-                cart.push(product);
+            if(product && !product.isOutStock) {
+                const chosenSize = selectedSizes[productId] || (product.sizes ? product.sizes[0] : 'M');
+                const cartItem = { ...product, chosenSize: chosenSize };
+                cart.push(cartItem);
                 updateCartCount();
-                alert(`${product.name} has been added to your cart.`);
+                alert(`${product.name} (Size: ${chosenSize}) has been added to your cart.`);
             }
         }
 
@@ -1847,7 +1995,7 @@
                 cart.forEach((item, index) => {
                     const activePrice = (item.isSale && item.salePrice) ? item.salePrice : item.price;
                     total += activePrice;
-                    itemSummaryList.push(`${item.sku} - ${item.name} (₱${activePrice.toFixed(2)})`);
+                    itemSummaryList.push(`${item.sku} - ${item.name} [Size: ${item.chosenSize || 'M'}] (₱${activePrice.toFixed(2)})`);
 
                     const div = document.createElement('div');
                     div.className = 'cart-item';
@@ -1856,7 +2004,7 @@
                             <img src="${item.images[0]}" class="cart-item-img" alt="">
                             <div>
                                 <strong>${item.name}</strong><br>
-                                <small style="color:var(--gray);">${item.sku} | ₱${activePrice.toFixed(2)}</small>
+                                <small style="color:var(--gray);">${item.sku} | Size: <strong>${item.chosenSize || 'M'}</strong> | ₱${activePrice.toFixed(2)}</small>
                             </div>
                         </div>
                         <button class="btn btn-outline" style="padding: 3px 6px; font-size: 0.75rem;" onclick="removeFromCart(${index})">Remove</button>
