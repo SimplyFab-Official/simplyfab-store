@@ -1095,7 +1095,7 @@
                         const uniqueSku = product.sku;
                         const files = Array.from(fileInput.files);
                         let storedImageUrls = [];
-                        let processedCount = 0;
+                        let completedUploads = 0;
 
                         files.forEach((file, index) => {
                             const reader = new FileReader();
@@ -1120,8 +1120,8 @@
                                     storedImageUrls[index] = e.target.result;
                                 }
 
-                                processedCount++;
-                                if (processedCount === files.length) {
+                                completedUploads++;
+                                if (completedUploads === files.length) {
                                     product.images = storedImageUrls;
                                     finalizeUpdate(product);
                                 }
@@ -1141,7 +1141,7 @@
                 const uniqueSku = generateUniqueSKU(category);
                 const files = Array.from(fileInput.files);
                 let storedImageUrls = [];
-                let processedCount = 0;
+                let completedUploads = 0;
 
                 files.forEach((file, index) => {
                     const reader = new FileReader();
@@ -1166,8 +1166,8 @@
                             storedImageUrls[index] = e.target.result;
                         }
 
-                        processedCount++;
-                        if (processedCount === files.length) {
+                        completedUploads++;
+                        if (completedUploads === files.length) {
                             const newItem = {
                                 id: Date.now(),
                                 sku: uniqueSku,
