@@ -998,8 +998,7 @@
         </div>
         <div class="chat-input-area">
             <div class="chat-input-row">
-                <input type="text" id="chat-user-name" placeholder="Your Name..." style="flex:1;">
-                <input type="text" id="chat-user-phone" placeholder="Phone Number..." style="flex:1;">
+                <input type="text" id="chat-user-name" placeholder="Your Name..." style="width: 100%;">
             </div>
             <div class="chat-input-row">
                 <input type="text" id="chat-user-msg" placeholder="Type a message to everyone..." onkeydown="if(event.key==='Enter') sendChatMessage()">
@@ -1240,7 +1239,7 @@
         ];
 
         let chatMessages = JSON.parse(localStorage.getItem('simplyfab_chat')) || [
-            { name: "Admin SimplyFab", phone: "09954836767", msg: "Welcome to our community chat! Feel free to ask any styling or sizing questions here.", time: "Just now" }
+            { name: "Admin SimplyFab", msg: "Welcome to our community chat! Feel free to ask any styling or sizing questions here.", time: "Just now" }
         ];
 
         let activityLogs = JSON.parse(localStorage.getItem('simplyfab_logs')) || [
@@ -1538,7 +1537,7 @@
                 div.innerHTML = `
                     <div class="chat-avatar">${initial}</div>
                     <div>
-                        <strong style="color:var(--primary-dark);">${m.name}</strong> <span style="font-size:0.7rem; color:var(--gray);">(${m.phone || 'Visitor'})</span><br>
+                        <strong style="color:var(--primary-dark);">${m.name}</strong><br>
                         <span>${m.msg}</span>
                     </div>
                 `;
@@ -1549,7 +1548,6 @@
 
         function sendChatMessage() {
             const name = document.getElementById('chat-user-name').value.trim();
-            const phone = document.getElementById('chat-user-phone').value.trim();
             const msg = document.getElementById('chat-user-msg').value.trim();
 
             if(!name || !msg) {
@@ -1557,7 +1555,7 @@
                 return;
             }
 
-            chatMessages.push({ name: name, phone: phone || 'Guest', msg: msg, time: new Date().toLocaleTimeString() });
+            chatMessages.push({ name: name, msg: msg, time: new Date().toLocaleTimeString() });
             document.getElementById('chat-user-msg').value = '';
             syncToGitHubRepo(`Community chat message from ${name}`);
             renderChatMessages();
