@@ -672,6 +672,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            align-items: center;
         }
 
         footer a {
@@ -1131,7 +1132,10 @@
             <p>📱 Mobile / WhatsApp / Viber / SMS / Zalo: <a href="tel:09954836767">09954836767</a></p>
             <p>✉️ Email: <a href="mailto:tin23_angela@gmail.com">tin23_angela@gmail.com</a></p>
             <p>🌐 Facebook Page: <a href="https://www.facebook.com/SimplyFab02" target="_blank">facebook.com/SimplyFab02</a></p>
-            <p style="margin-top: 10px; font-size: 0.75rem;">&copy; 2026 SimplyFab. All rights reserved. Powered by GitHub Sync.</p>
+            <p style="margin-top: 10px;">
+                <button class="btn" style="font-size: 0.8rem; padding: 6px 14px;" onclick="openAdminLoginModal()">⚙️ Admin Portal Login</button>
+            </p>
+            <p style="margin-top: 5px; font-size: 0.75rem;">&copy; 2026 SimplyFab. All rights reserved. Powered by GitHub Sync.</p>
         </div>
     </footer>
 
@@ -1144,13 +1148,14 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Enter Admin Password Code (021910):</label>
-                    <input type="password" id="admin-code-input" placeholder="Enter code...">
+                    <input type="password" id="admin-code-input" placeholder="Enter code..." onkeydown="if(event.key==='Enter') verifyAdminCode()">
                 </div>
                 <button class="btn" style="width: 100%;" onclick="verifyAdminCode()">Login to Admin Panel</button>
             </div>
         </div>
     </div>
 
+    <!-- IN-PAGE ADMIN DASHBOARD MODAL (Matches original base implementation) -->
     <div id="admin-dashboard-modal" class="modal">
         <div class="modal-content" style="max-width: 850px;">
             <div class="modal-header">
@@ -1585,7 +1590,7 @@
 
         function toggleGitHubConfig() {
             const panel = document.getElementById('github-config-panel');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            if(panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
         }
 
         function saveGitHubConfig() {
@@ -1676,6 +1681,7 @@
             }
 
             const grid = document.getElementById('product-grid');
+            if(!grid) return;
             grid.innerHTML = '';
 
             let filtered = products;
@@ -1816,7 +1822,8 @@
             if(product) {
                 product.likes = (product.likes || 0) + 1;
                 syncToGitHubRepo(`Liked item ${product.sku}`);
-                const activeCat = document.querySelector('.filter-btn.active').textContent.toLowerCase().includes('casual') ? 'casual' : document.querySelector('.filter-btn.active').textContent.toLowerCase().includes('gowns') ? 'gowns' : 'all';
+                const activeBtn = document.querySelector('.filter-btn.active');
+                const activeCat = activeBtn && activeBtn.textContent.toLowerCase().includes('casual') ? 'casual' : activeBtn && activeBtn.textContent.toLowerCase().includes('gowns') ? 'gowns' : 'all';
                 renderProducts(activeCat);
                 if(activeGalleryProductId === productId) openGalleryModal(productId);
             }
@@ -1842,21 +1849,23 @@
             const product = products.find(p => p.id === productId);
             if (!product) return;
 
-            document.getElementById('gallery-modal-title').innerText = `${product.sku} - ${product.name} (${product.likes || 0} ❤️)`;
+            const titleEl = document.getElementById('gallery-modal-title');
+            if(titleEl) titleEl.innerText = `${product.sku} - ${product.name} (${product.likes || 0} ❤️)`;
+            
             const activeViewImg = document.getElementById('gallery-active-img');
             const thumbsContainer = document.getElementById('gallery-thumbs-container');
             const commentsContainer = document.getElementById('modal-comments-list');
 
-            activeViewImg.src = product.images && product.images[0] ? product.images[0] : '';
-            thumbsContainer.innerHTML = '';
+            if(activeViewImg) activeViewImg.src = product.images && product.images[0] ? product.images[0] : '';
+            if(thumbsContainer) thumbsContainer.innerHTML = '';
 
-            if(product.images) {
+            if(product.images && thumbsContainer) {
                 product.images.forEach((imgUrl, idx) => {
                     const thumbDiv = document.createElement('div');
                     thumbDiv.className = `gallery-thumb-item ${idx === 0 ? 'active' : ''}`;
                     thumbDiv.innerHTML = `<img src="${imgUrl}" alt="gallery photo">`;
                     thumbDiv.onclick = function() {
-                        activeViewImg.src = imgUrl;
+                        if(activeViewImg) activeViewImg.src = imgUrl;
                         document.querySelectorAll('.gallery-thumb-item').forEach(t => t.classList.remove('active'));
                         thumbDiv.classList.add('active');
                     };
@@ -1864,36 +1873,43 @@
                 });
             }
 
-            commentsContainer.innerHTML = '';
-            if(!product.comments || product.comments.length === 0) {
-                commentsContainer.innerHTML = `<div style="color:var(--gray); text-align:center; padding: 10px;">No reviews yet. Be the first to add one!</div>`;
-            } else {
-                product.comments.forEach(c => {
-                    const div = document.createElement('div');
-                    div.className = 'comment-item';
-                    div.innerHTML = `<strong>${c.name}:</strong> ${c.text}`;
-                    commentsContainer.appendChild(div);
-                });
+            if(commentsContainer) {
+                commentsContainer.innerHTML = '';
+                if(!product.comments || product.comments.length === 0) {
+                    commentsContainer.innerHTML = `<div style="color:var(--gray); text-align:center; padding: 10px;">No reviews yet. Be the first to add one!</div>`;
+                } else {
+                    product.comments.forEach(c => {
+                        const div = document.createElement('div');
+                        div.className = 'comment-item';
+                        div.innerHTML = `<strong>${c.name}:</strong> ${c.text}`;
+                        commentsContainer.appendChild(div);
+                    });
+                }
             }
 
             closeModals();
-            document.getElementById('gallery-modal').style.display = 'flex';
+            const modalEl = document.getElementById('gallery-modal');
+            if(modalEl) modalEl.style.display = 'flex';
         }
 
         function submitProductComment() {
             if(!activeGalleryProductId) return;
             const product = products.find(p => p.id === activeGalleryProductId);
-            const authorInput = document.getElementById('comment-author-input').value.trim();
-            const textInput = document.getElementById('comment-text-input').value.trim();
+            const authorInput = document.getElementById('comment-author-input');
+            const textInput = document.getElementById('comment-text-input');
 
-            if(!authorInput || !textInput) {
+            if(!authorInput || !textInput) return;
+            const authorVal = authorInput.value.trim();
+            const textVal = textInput.value.trim();
+
+            if(!authorVal || !textVal) {
                 alert("Please enter your name and comment review!");
                 return;
             }
 
             if(!product.comments) product.comments = [];
-            product.comments.push({ name: authorInput, text: textInput });
-            document.getElementById('comment-text-input').value = '';
+            product.comments.push({ name: authorVal, text: textVal });
+            textInput.value = '';
             syncToGitHubRepo(`Added review to ${product.sku}`);
             openGalleryModal(activeGalleryProductId);
             renderProducts('all');
@@ -1901,14 +1917,18 @@
 
         function toggleChatWidget() {
             const box = document.getElementById('chat-widget-box');
-            box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
-            renderChatMessages();
+            if(box) {
+                box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+                renderChatMessages();
+            }
         }
 
         function renderChatMessages() {
             const container = document.getElementById('chat-messages-container');
+            const badge = document.getElementById('chat-count-badge');
+            if(!container) return;
             container.innerHTML = '';
-            document.getElementById('chat-count-badge').innerText = chatMessages.length;
+            if(badge) badge.innerText = chatMessages.length;
 
             chatMessages.forEach(m => {
                 const initial = m.name ? m.name.charAt(0).toUpperCase() : 'U';
@@ -1927,8 +1947,11 @@
         }
 
         function sendChatMessage() {
-            const name = document.getElementById('chat-user-name').value.trim();
-            const msg = document.getElementById('chat-user-msg').value.trim();
+            const nameEl = document.getElementById('chat-user-name');
+            const msgEl = document.getElementById('chat-user-msg');
+            if(!nameEl || !msgEl) return;
+            const name = nameEl.value.trim();
+            const msg = msgEl.value.trim();
 
             if(!name || !msg) {
                 alert("Please enter your name and message to chat!");
@@ -1936,7 +1959,7 @@
             }
 
             chatMessages.push({ name: name, msg: msg, time: new Date().toLocaleTimeString() });
-            document.getElementById('chat-user-msg').value = '';
+            msgEl.value = '';
             syncToGitHubRepo(`Community chat message from ${name}`);
             renderChatMessages();
         }
@@ -1945,39 +1968,46 @@
             if(!imgUrl) return;
             const lightbox = document.getElementById('lightbox-modal');
             const lightboxImg = document.getElementById('lightbox-img-el');
-            lightboxImg.src = imgUrl;
-            lightbox.style.display = 'flex';
+            if(lightbox && lightboxImg) {
+                lightboxImg.src = imgUrl;
+                lightbox.style.display = 'flex';
+            }
         }
 
         function closeLightbox() {
-            document.getElementById('lightbox-modal').style.display = 'none';
+            const lightbox = document.getElementById('lightbox-modal');
+            if(lightbox) lightbox.style.display = 'none';
         }
 
         function openAdminLoginModal() {
             closeModals();
-            document.getElementById('admin-login-modal').style.display = 'flex';
-            document.getElementById('gh-username').value = ghConfig.username;
-            document.getElementById('gh-repo').value = ghConfig.repo;
-            document.getElementById('gh-token').value = ghConfig.token;
+            const modal = document.getElementById('admin-login-modal');
+            const codeInput = document.getElementById('admin-code-input');
+            if(modal) modal.style.display = 'flex';
+            if(codeInput) codeInput.focus();
         }
 
         function verifyAdminCode() {
-            const code = document.getElementById('admin-code-input').value;
+            const codeInput = document.getElementById('admin-code-input');
+            if(!codeInput) return;
+            const code = codeInput.value;
             if (code === "021910") {
                 logActivity("Admin authenticated successfully.");
-                document.getElementById('admin-code-input').value = '';
+                codeInput.value = '';
                 closeModals();
-                document.getElementById('admin-dashboard-modal').style.display = 'flex';
-                switchAdminTab('management', document.querySelector('.admin-tab-btn'));
-                renderLogs();
-                renderAdminTable();
-                populateInvoiceItemDropdown();
-                renderInvoicesTable();
-                autoGenerateItemName();
-                previewVndConversion();
-
-                // Open customer view in a brand new browser tab automatically upon login
-                window.open(window.location.href.split('#')[0], '_blank');
+                
+                // Open Admin Dashboard modal locally or display the in-page management modal cleanly
+                const dashModal = document.getElementById('admin-dashboard-modal');
+                if(dashModal) {
+                    dashModal.style.display = 'flex';
+                    switchAdminTab('management', document.querySelector('.admin-tab-btn'));
+                    renderLogs();
+                    renderAdminTable();
+                    populateInvoiceItemDropdown();
+                    renderInvoicesTable();
+                    autoGenerateItemName();
+                    previewVndConversion();
+                }
             } else {
                 alert("Incorrect Admin Access Code!");
                 logActivity("Failed admin login attempt.");
@@ -1989,7 +2019,8 @@
             document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
 
             if(btnEl) btnEl.classList.add('active');
-            document.getElementById(`admin-tab-${tabName}`).classList.add('active');
+            const pane = document.getElementById(`admin-tab-${tabName}`);
+            if(pane) pane.classList.add('active');
 
             if(tabName === 'preview') {
                 refreshLivePreview();
@@ -1998,6 +2029,7 @@
 
         function refreshLivePreview() {
             const previewBox = document.getElementById('live-preview-box');
+            if(!previewBox) return;
             previewBox.innerHTML = `<div class="product-grid" id="preview-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));"></div>`;
             const pGrid = document.getElementById('preview-grid');
 
@@ -2025,29 +2057,36 @@
         }
 
         function autoGenerateItemName() {
+            const catEl = document.getElementById('item-category');
+            if(!catEl) return;
             if(document.getElementById('edit-item-id').value) return;
-            const category = document.getElementById('item-category').value;
+            const category = catEl.value;
             const nextSku = generateUniqueSKU(category);
             const titles = {
                 'casual': 'SimplyFab Casual Dress ',
                 'gowns': 'SimplyFab Elegant Gown ',
                 'catalogue': 'SimplyFab Collection '
             };
-            document.getElementById('item-name').value = (titles[category] || 'SimplyFab Item ') + nextSku;
+            const nameEl = document.getElementById('item-name');
+            if(nameEl) nameEl.value = (titles[category] || 'SimplyFab Item ') + nextSku;
         }
 
         function previewVndConversion() {
-            const vndVal = parseFloat(document.getElementById('item-price-vnd').value) || 0;
+            const priceVndEl = document.getElementById('item-price-vnd');
+            const previewEl = document.getElementById('vnd-conversion-preview');
+            if(!priceVndEl || !previewEl) return;
+            const vndVal = parseFloat(priceVndEl.value) || 0;
             const phpVal = convertVndToPhp(vndVal);
-            document.getElementById('vnd-conversion-preview').innerText = `Estimated PHP (with ₱1,000 hidden markup): ₱${phpVal.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            previewEl.innerText = `Estimated PHP (with ₱1,000 hidden markup): ₱${phpVal.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         }
 
         function renderAdminTable() {
             const tbody = document.getElementById('admin-items-table-body');
+            const searchInput = document.getElementById('admin-search-input');
             if(!tbody) return;
             tbody.innerHTML = '';
 
-            const searchTerm = document.getElementById('admin-search-input').value.toLowerCase();
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
             const filteredProducts = products.filter(p => 
                 p.sku.toLowerCase().includes(searchTerm) || p.name.toLowerCase().includes(searchTerm)
             );
@@ -2101,27 +2140,37 @@
 
         function updateInvoiceItemPrice() {
             const select = document.getElementById('inv-item-select');
-            if(select && select.selectedOptions && select.selectedOptions.length > 0) {
+            const unitPriceEl = document.getElementById('inv-unit-price');
+            if(select && select.selectedOptions && select.selectedOptions.length > 0 && unitPriceEl) {
                 const price = parseFloat(select.selectedOptions[0].getAttribute('data-price')) || 0;
-                document.getElementById('inv-unit-price').value = price.toFixed(2);
+                unitPriceEl.value = price.toFixed(2);
                 calcInvoiceTotals();
             }
         }
 
         function calcInvoiceTotals() {
-            const unitPrice = parseFloat(document.getElementById('inv-unit-price').value) || 0;
-            const qty = parseInt(document.getElementById('inv-qty').value) || 1;
-            const downpayment = parseFloat(document.getElementById('inv-downpayment').value) || 0;
+            const unitPriceEl = document.getElementById('inv-unit-price');
+            const qtyEl = document.getElementById('inv-qty');
+            const downpaymentEl = document.getElementById('inv-downpayment');
+            
+            const unitPrice = unitPriceEl ? parseFloat(unitPriceEl.value) || 0 : 0;
+            const qty = qtyEl ? parseInt(qtyEl.value) || 1 : 1;
+            const downpayment = downpaymentEl ? parseFloat(downpaymentEl.value) || 0 : 0;
 
             const subtotal = unitPrice * qty;
             const vat = subtotal * 0.12; 
             const total = subtotal + vat;
             const balance = Math.max(0, total - downpayment);
 
-            document.getElementById('sum-subtotal').innerText = `₱${subtotal.toFixed(2)}`;
-            document.getElementById('sum-vat').innerText = `₱${vat.toFixed(2)}`;
-            document.getElementById('sum-total').innerText = `₱${total.toFixed(2)}`;
-            document.getElementById('sum-balance').innerText = `₱${balance.toFixed(2)}`;
+            const subtotalEl = document.getElementById('sum-subtotal');
+            const vatEl = document.getElementById('sum-vat');
+            const totalEl = document.getElementById('sum-total');
+            const balanceEl = document.getElementById('sum-balance');
+
+            if(subtotalEl) subtotalEl.innerText = `₱${subtotal.toFixed(2)}`;
+            if(vatEl) vatEl.innerText = `₱${vat.toFixed(2)}`;
+            if(totalEl) totalEl.innerText = `₱${total.toFixed(2)}`;
+            if(balanceEl) balanceEl.innerText = `₱${balance.toFixed(2)}`;
 
             return { subtotal, vat, total, balance };
         }
@@ -2324,10 +2373,15 @@
                 });
             }
 
-            document.getElementById('metric-total-orders').innerText = invoices.length;
-            document.getElementById('metric-completed-orders').innerText = completedCount;
-            document.getElementById('metric-pending-orders').innerText = pendingCount;
-            document.getElementById('metric-total-revenue').innerText = `₱${totalRevenue.toFixed(2)}`;
+            const totalOrdersEl = document.getElementById('metric-total-orders');
+            const completedOrdersEl = document.getElementById('metric-completed-orders');
+            const pendingOrdersEl = document.getElementById('metric-pending-orders');
+            const totalRevenueEl = document.getElementById('metric-total-revenue');
+
+            if(totalOrdersEl) totalOrdersEl.innerText = invoices.length;
+            if(completedOrdersEl) completedOrdersEl.innerText = completedCount;
+            if(pendingOrdersEl) pendingOrdersEl.innerText = pendingCount;
+            if(totalRevenueEl) totalRevenueEl.innerText = `₱${totalRevenue.toFixed(2)}`;
         }
 
         function openInvoiceReceiptModal(invoiceId) {
@@ -2366,7 +2420,8 @@
             document.getElementById('receipt-calc-balance').innerText = `₱${inv.balance.toFixed(2)}`;
 
             closeModals();
-            document.getElementById('invoice-modal').style.display = 'flex';
+            const invModal = document.getElementById('invoice-modal');
+            if(invModal) invModal.style.display = 'flex';
         }
 
         function printInvoiceReceipt() {
@@ -2584,7 +2639,8 @@
         }
 
         function updateCartCount() {
-            document.getElementById('cart-count').innerText = cart.length;
+            const countEl = document.getElementById('cart-count');
+            if(countEl) countEl.innerText = cart.length;
         }
 
         function openCartModal() {
@@ -2592,6 +2648,8 @@
             const container = document.getElementById('cart-items-container');
             const totalEl = document.getElementById('cart-total-price');
             const messengerBtn = document.getElementById('messenger-checkout-btn');
+
+            if(!container || !totalEl || !messengerBtn) return;
 
             if (cart.length === 0) {
                 container.innerHTML = `<div class="empty-state">Your cart is empty.</div>`;
@@ -2611,7 +2669,7 @@
                     const div = document.createElement('div');
                     div.className = 'cart-item';
                     div.innerHTML = `
-                        <div class="cart-item-info">
+                        <div class="cart-item-img-info" style="display:flex; gap:12px; align-items:center;">
                             <img src="${item.images && item.images[0] ? item.images[0] : ''}" class="cart-item-img" alt="">
                             <div>
                                 <strong>${item.name}</strong><br>
@@ -2631,7 +2689,8 @@
                 messengerBtn.href = `https://www.facebook.com/messages/t/110124887067313?text=` + encodeURIComponent(messengerText);
                 messengerBtn.style.display = 'flex';
             }
-            document.getElementById('cart-modal').style.display = 'flex';
+            const cartModal = document.getElementById('cart-modal');
+            if(cartModal) cartModal.style.display = 'flex';
         }
 
         function removeFromCart(index) {
