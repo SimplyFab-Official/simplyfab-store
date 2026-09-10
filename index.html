@@ -696,12 +696,12 @@
         .modal-content {
             background: var(--white);
             width: 100%;
-            max-width: 750px;
+            max-width: 850px;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             animation: modalPop 0.25s ease;
-            max-height: 92vh;
+            max-height: 94vh;
             display: flex;
             flex-direction: column;
         }
@@ -739,6 +739,51 @@
 
         .modal-body {
             padding: 1.2rem;
+            overflow-y: auto;
+        }
+
+        .admin-tabs-nav {
+            display: flex;
+            background: #e9ecef;
+            border-radius: 6px;
+            padding: 4px;
+            gap: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .admin-tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: all 0.2s;
+        }
+
+        .admin-tab-btn.active {
+            background: var(--white);
+            color: var(--dark);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .admin-tab-pane {
+            display: none;
+        }
+
+        .admin-tab-pane.active {
+            display: block;
+        }
+
+        .live-preview-container {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            background: #f8f9fa;
+            padding: 15px;
+            max-height: 60vh;
             overflow-y: auto;
         }
 
@@ -1102,202 +1147,219 @@
     </div>
 
     <div id="admin-dashboard-modal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-content" style="max-width: 850px;">
             <div class="modal-header">
                 <h3>SimplyFab Admin Panel & Management</h3>
                 <button class="close-modal" onclick="closeModals()">&times;</button>
             </div>
             <div class="modal-body">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px;">
-                    <p class="github-sync-status" style="margin:0;"><span class="sync-dot"></span> Auto-sync active & published to GitHub repository.</p>
-                    <button class="btn btn-outline" style="padding: 2px 6px; font-size: 0.75rem;" onclick="toggleGitHubConfig()">⚙️ GitHub Settings</button>
-                </div>
-                
-                <div id="github-config-panel" style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin: 8px 0; border: 1px solid #ddd; display: none;">
-                    <h5 style="margin-bottom: 6px; font-size: 0.85rem;">⚙️ GitHub Repo Credentials</h5>
-                    <div style="display: flex; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
-                        <input type="text" id="gh-username" placeholder="GitHub Username" style="flex:1; min-width: 140px;">
-                        <input type="text" id="gh-repo" placeholder="Repository Name" style="flex:1; min-width: 140px;">
-                    </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <input type="password" id="gh-token" placeholder="Personal Access Token" style="flex:3; min-width: 180px;">
-                        <button class="btn" onclick="saveGitHubConfig()" style="flex:1; font-size:0.75rem;">Save Config</button>
-                    </div>
+                <div class="admin-tabs-nav">
+                    <button class="admin-tab-btn active" onclick="switchAdminTab('management', this)">⚙️ Management & Invoices</button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab('preview', this)">👁️ Live Customer View Tab</button>
                 </div>
 
-                <form id="upload-form" onsubmit="handleItemUpload(event)">
-                    <h4 class="admin-section-title" id="form-heading">Upload New Item</h4>
-                    <input type="hidden" id="edit-item-id" value="">
-                    
-                    <div class="form-group">
-                        <label>Item Name:</label>
-                        <input type="text" id="item-name" required placeholder="Item title...">
-                    </div>
-                    <div class="form-group">
-                        <label>Category (Catalog Main Tag):</label>
-                        <select id="item-category" required onchange="autoGenerateItemName()">
-                            <option value="casual">Casual Dress</option>
-                            <option value="gowns">Gowns</option>
-                            <option value="catalogue">Catalogue (General)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Price in Vietnamese Dong (VND ₫) - Auto Converts to PHP (₱):</label>
-                        <input type="number" step="1000" id="item-price-vnd" required placeholder="750000" oninput="previewVndConversion()">
-                        <p style="font-size: 0.8rem; color: var(--edit); margin-top: 4px; font-family: monospace;" id="vnd-conversion-preview">Estimated PHP: ₱0.00</p>
-                    </div>
-                    <div class="form-group">
-                        <label>Sale Price in Vietnamese Dong (VND ₫ - Optional):</label>
-                        <input type="number" step="1000" id="item-saleprice-vnd" placeholder="Leave blank if no sale">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Available Sizes for Item:</label>
-                        <div style="display: flex; gap: 15px; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #ddd; flex-wrap: wrap;">
-                            <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="S" checked> S</label>
-                            <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="M" checked> M</label>
-                            <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="L" checked> L</label>
-                            <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="XL" checked> XL</label>
-                            <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="XXL" checked> XXL</label>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 20px; margin-bottom: 1rem; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #ddd; flex-wrap: wrap;">
-                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
-                            <input type="checkbox" id="item-isnew" style="width: 16px; height: 16px;"> ✨ New Arrival
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
-                            <input type="checkbox" id="item-issale" style="width: 16px; height: 16px;"> 🔥 On Sale
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--danger);">
-                            <input type="checkbox" id="item-isoutstock" style="width: 16px; height: 16px;"> ❌ Out of Stock
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label id="file-input-label">Select Pictures (Upload multiple pictures):</label>
-                        <input type="file" id="item-files" accept="image/*" multiple>
-                    </div>
-                    <div style="display:flex; gap: 8px; flex-wrap: wrap;">
-                        <button type="submit" id="form-submit-btn" class="btn" style="flex:2;">Upload, Store & Publish to GitHub</button>
-                        <button type="button" id="cancel-edit-btn" class="btn btn-outline" style="flex:1; display:none;" onclick="resetUploadForm()">Cancel Edit</button>
-                    </div>
-                </form>
-
-                <h4 class="admin-section-title" id="invoice-form-title">🧾 Manual Customer Invoicing & Sales Reports</h4>
-                <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1rem;">
-                    <input type="hidden" id="edit-invoice-id" value="">
-                    <div style="display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
-                        <div style="flex:1; min-width: 180px;">
-                            <label style="font-size:0.8rem; font-weight:600;">Customer Name:</label>
-                            <input type="text" id="inv-cust-name" placeholder="Full name..." style="padding:6px; font-size:0.85rem;">
-                        </div>
-                        <div style="flex:2; min-width: 220px;">
-                            <label style="font-size:0.8rem; font-weight:600;">Delivery Address:</label>
-                            <input type="text" id="inv-cust-address" placeholder="Complete address..." style="padding:6px; font-size:0.85rem;">
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
-                        <div style="flex:1; min-width: 180px;">
-                            <label style="font-size:0.8rem; font-weight:600;">Select Catalog Item:</label>
-                            <select id="inv-item-select" style="padding:6px; font-size:0.85rem;" onchange="updateInvoiceItemPrice()">
-                            </select>
-                        </div>
-                        <div style="flex:1; min-width: 120px;">
-                            <label style="font-size:0.8rem; font-weight:600;">Payment Method:</label>
-                            <select id="inv-pay-method" style="padding:6px; font-size:0.85rem;">
-                                <option value="GCash">GCash</option>
-                                <option value="Bank Transfer">Bank Transfer (BPI/BDO)</option>
-                                <option value="COD">Cash on Delivery (COD)</option>
-                                <option value="Maya">Maya</option>
-                            </select>
-                        </div>
-                        <div style="flex:1; min-width: 120px;">
-                            <label style="font-size:0.8rem; font-weight:600;">Order Status:</label>
-                            <select id="inv-status" style="padding:6px; font-size:0.85rem;">
-                                <option value="Pending">Pending</option>
-                                <option value="Completed">Completed</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; align-items: center;">
-                        <div style="flex:1;">
-                            <label style="font-size:0.8rem; font-weight:600;">Unit Price (₱):</label>
-                            <input type="number" id="inv-unit-price" readonly style="background:#eee; padding:6px; font-size:0.85rem;">
-                        </div>
-                        <div style="flex:1;">
-                            <label style="font-size:0.8rem; font-weight:600;">Quantity:</label>
-                            <input type="number" id="inv-qty" value="1" min="1" style="padding:6px; font-size:0.85rem;" oninput="calcInvoiceTotals()">
-                        </div>
-                        <div style="flex:1;">
-                            <label style="font-size:0.8rem; font-weight:600;">Partial Downpayment (₱):</label>
-                            <input type="number" id="inv-downpayment" value="0" step="0.01" style="padding:6px; font-size:0.85rem;" placeholder="Optional downpayment" oninput="calcInvoiceTotals()">
-                        </div>
+                <div id="admin-tab-management" class="admin-tab-pane active">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px;">
+                        <p class="github-sync-status" style="margin:0;"><span class="sync-dot"></span> Auto-sync active & published to GitHub repository.</p>
+                        <button class="btn btn-outline" style="padding: 2px 6px; font-size: 0.75rem;" onclick="toggleGitHubConfig()">⚙️ GitHub Settings</button>
                     </div>
                     
-                    <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px dashed #ccc; font-size: 0.82rem; margin-bottom: 10px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                        <div>Subtotal: <strong id="sum-subtotal">₱0.00</strong></div>
-                        <div>PH VAT (12%): <strong id="sum-vat">₱0.00</strong></div>
-                        <div>Total Amount: <strong id="sum-total" style="color:var(--primary-dark);">₱0.00</strong></div>
-                        <div>Balance Due: <strong id="sum-balance" style="color:var(--danger);">₱0.00</strong></div>
+                    <div id="github-config-panel" style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin: 8px 0; border: 1px solid #ddd; display: none;">
+                        <h5 style="margin-bottom: 6px; font-size: 0.85rem;">⚙️ GitHub Repo Credentials</h5>
+                        <div style="display: flex; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+                            <input type="text" id="gh-username" placeholder="GitHub Username" style="flex:1; min-width: 140px;">
+                            <input type="text" id="gh-repo" placeholder="Repository Name" style="flex:1; min-width: 140px;">
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <input type="password" id="gh-token" placeholder="Personal Access Token" style="flex:3; min-width: 180px;">
+                            <button class="btn" onclick="saveGitHubConfig()" style="flex:1; font-size:0.75rem;">Save Config</button>
+                        </div>
                     </div>
 
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn" style="flex:2;" id="inv-submit-btn" onclick="generateAndSaveInvoice()">📄 Generate Official Invoice & Record Sale</button>
-                        <button class="btn btn-outline" style="flex:1; display:none;" id="inv-cancel-btn" onclick="resetInvoiceForm()">Cancel Edit</button>
+                    <form id="upload-form" onsubmit="handleItemUpload(event)">
+                        <h4 class="admin-section-title" id="form-heading">Upload New Item</h4>
+                        <input type="hidden" id="edit-item-id" value="">
+                        
+                        <div class="form-group">
+                            <label>Item Name:</label>
+                            <input type="text" id="item-name" required placeholder="Item title...">
+                        </div>
+                        <div class="form-group">
+                            <label>Category (Catalog Main Tag):</label>
+                            <select id="item-category" required onchange="autoGenerateItemName()">
+                                <option value="casual">Casual Dress</option>
+                                <option value="gowns">Gowns</option>
+                                <option value="catalogue">Catalogue (General)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Price in Vietnamese Dong (VND ₫) - Auto Converts to PHP (₱):</label>
+                            <input type="number" step="1000" id="item-price-vnd" required placeholder="750000" oninput="previewVndConversion()">
+                            <p style="font-size: 0.8rem; color: var(--edit); margin-top: 4px; font-family: monospace;" id="vnd-conversion-preview">Estimated PHP (with ₱1,000 hidden markup): ₱0.00</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Sale Price in Vietnamese Dong (VND ₫ - Optional):</label>
+                            <input type="number" step="1000" id="item-saleprice-vnd" placeholder="Leave blank if no sale">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Available Sizes for Item:</label>
+                            <div style="display: flex; gap: 15px; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #ddd; flex-wrap: wrap;">
+                                <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="S" checked> S</label>
+                                <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="M" checked> M</label>
+                                <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="L" checked> L</label>
+                                <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="XL" checked> XL</label>
+                                <label style="display:flex; align-items:center; gap:4px; font-weight:normal; cursor:pointer;"><input type="checkbox" name="admin-size" value="XXL" checked> XXL</label>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 20px; margin-bottom: 1rem; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #ddd; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+                                <input type="checkbox" id="item-isnew" style="width: 16px; height: 16px;"> ✨ New Arrival
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+                                <input type="checkbox" id="item-issale" style="width: 16px; height: 16px;"> 🔥 On Sale
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--danger);">
+                                <input type="checkbox" id="item-isoutstock" style="width: 16px; height: 16px;"> ❌ Out of Stock
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label id="file-input-label">Select Pictures (Upload multiple pictures):</label>
+                            <input type="file" id="item-files" accept="image/*" multiple>
+                        </div>
+                        <div style="display:flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="submit" id="form-submit-btn" class="btn" style="flex:2;">Upload, Store & Publish to GitHub</button>
+                            <button type="button" id="cancel-edit-btn" class="btn btn-outline" style="flex:1; display:none;" onclick="resetUploadForm()">Cancel Edit</button>
+                        </div>
+                    </form>
+
+                    <h4 class="admin-section-title" id="invoice-form-title">🧾 Manual Customer Invoicing & Sales Reports</h4>
+                    <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1rem;">
+                        <input type="hidden" id="edit-invoice-id" value="">
+                        <div style="display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+                            <div style="flex:1; min-width: 180px;">
+                                <label style="font-size:0.8rem; font-weight:600;">Customer Name:</label>
+                                <input type="text" id="inv-cust-name" placeholder="Full name..." style="padding:6px; font-size:0.85rem;">
+                            </div>
+                            <div style="flex:2; min-width: 220px;">
+                                <label style="font-size:0.8rem; font-weight:600;">Delivery Address:</label>
+                                <input type="text" id="inv-cust-address" placeholder="Complete address..." style="padding:6px; font-size:0.85rem;">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+                            <div style="flex:1; min-width: 180px;">
+                                <label style="font-size:0.8rem; font-weight:600;">Select Catalog Item:</label>
+                                <select id="inv-item-select" style="padding:6px; font-size:0.85rem;" onchange="updateInvoiceItemPrice()">
+                                </select>
+                            </div>
+                            <div style="flex:1; min-width: 120px;">
+                                <label style="font-size:0.8rem; font-weight:600;">Payment Method:</label>
+                                <select id="inv-pay-method" style="padding:6px; font-size:0.85rem;">
+                                    <option value="GCash">GCash</option>
+                                    <option value="Bank Transfer">Bank Transfer (BPI/BDO)</option>
+                                    <option value="COD">Cash on Delivery (COD)</option>
+                                    <option value="Maya">Maya</option>
+                                </select>
+                            </div>
+                            <div style="flex:1; min-width: 120px;">
+                                <label style="font-size:0.8rem; font-weight:600;">Order Status:</label>
+                                <select id="inv-status" style="padding:6px; font-size:0.85rem;">
+                                    <option value="Pending">Pending</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; align-items: center;">
+                            <div style="flex:1;">
+                                <label style="font-size:0.8rem; font-weight:600;">Unit Price (₱):</label>
+                                <input type="number" id="inv-unit-price" readonly style="background:#eee; padding:6px; font-size:0.85rem;">
+                            </div>
+                            <div style="flex:1;">
+                                <label style="font-size:0.8rem; font-weight:600;">Quantity:</label>
+                                <input type="number" id="inv-qty" value="1" min="1" style="padding:6px; font-size:0.85rem;" oninput="calcInvoiceTotals()">
+                            </div>
+                            <div style="flex:1;">
+                                <label style="font-size:0.8rem; font-weight:600;">Partial Downpayment (₱):</label>
+                                <input type="number" id="inv-downpayment" value="0" step="0.01" style="padding:6px; font-size:0.85rem;" placeholder="Optional downpayment" oninput="calcInvoiceTotals()">
+                            </div>
+                        </div>
+                        
+                        <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px dashed #ccc; font-size: 0.82rem; margin-bottom: 10px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <div>Subtotal: <strong id="sum-subtotal">₱0.00</strong></div>
+                            <div>PH VAT (12%): <strong id="sum-vat">₱0.00</strong></div>
+                            <div>Total Amount: <strong id="sum-total" style="color:var(--primary-dark);">₱0.00</strong></div>
+                            <div>Balance Due: <strong id="sum-balance" style="color:var(--danger);">₱0.00</strong></div>
+                        </div>
+
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn" style="flex:2;" id="inv-submit-btn" onclick="generateAndSaveInvoice()">📄 Generate Official Invoice & Record Sale</button>
+                            <button class="btn btn-outline" style="flex:1; display:none;" id="inv-cancel-btn" onclick="resetInvoiceForm()">Cancel Edit</button>
+                        </div>
+                    </div>
+
+                    <div style="background: #e7f3ff; padding: 10px; border-radius: 6px; border: 1px solid #cce2ff; margin-bottom: 1rem; display: flex; justify-content: space-around; text-align: center; font-size: 0.82rem; flex-wrap: wrap; gap: 10px;">
+                        <div>Total Orders: <strong id="metric-total-orders">0</strong></div>
+                        <div>Completed Orders: <strong id="metric-completed-orders" style="color:var(--edit);">0</strong></div>
+                        <div>Pending Orders: <strong id="metric-pending-orders" style="color:var(--danger);">0</strong></div>
+                        <div>Total Revenue: <strong id="metric-total-revenue" style="color:var(--primary-dark);">₱0.00</strong></div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; flex-wrap: wrap; gap: 8px;">
+                        <h4 style="margin:0; font-size: 0.95rem;">Manage Existing Catalog Items</h4>
+                        <input type="text" id="admin-search-input" placeholder="🔍 Search SKU or Name..." style="width: 200px; padding: 5px 8px; font-size: 0.8rem;" oninput="renderAdminTable()">
+                    </div>
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>SKU</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price (VND / PHP)</th>
+                                    <th>Badges</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-items-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 class="admin-section-title">Sales & Invoice Records (Completed / Pending Log)</h4>
+                    <div class="admin-table-wrapper" style="max-height: 180px;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Customer</th>
+                                    <th>Item</th>
+                                    <th>Total</th>
+                                    <th>Balance Due</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-invoices-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 class="admin-section-title">Admin Activity Monitoring Logs</h4>
+                    <div id="admin-logs" class="logs-box">
+                        [System Initialization]: Admin portal loaded securely.<br>
                     </div>
                 </div>
 
-                <div style="background: #e7f3ff; padding: 10px; border-radius: 6px; border: 1px solid #cce2ff; margin-bottom: 1rem; display: flex; justify-content: space-around; text-align: center; font-size: 0.82rem; flex-wrap: wrap; gap: 10px;">
-                    <div>Total Orders: <strong id="metric-total-orders">0</strong></div>
-                    <div>Completed Orders: <strong id="metric-completed-orders" style="color:var(--edit);">0</strong></div>
-                    <div>Pending Orders: <strong id="metric-pending-orders" style="color:var(--danger);">0</strong></div>
-                    <div>Total Revenue: <strong id="metric-total-revenue" style="color:var(--primary-dark);">₱0.00</strong></div>
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; flex-wrap: wrap; gap: 8px;">
-                    <h4 style="margin:0; font-size: 0.95rem;">Manage Existing Catalog Items</h4>
-                    <input type="text" id="admin-search-input" placeholder="🔍 Search SKU or Name..." style="width: 200px; padding: 5px 8px; font-size: 0.8rem;" oninput="renderAdminTable()">
-                </div>
-                <div class="admin-table-wrapper">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>SKU</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Price (VND / PHP)</th>
-                                <th>Badges</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-items-table-body">
-                        </tbody>
-                    </table>
-                </div>
-
-                <h4 class="admin-section-title">Sales & Invoice Records (Completed / Pending Log)</h4>
-                <div class="admin-table-wrapper" style="max-height: 180px;">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Invoice #</th>
-                                <th>Customer</th>
-                                <th>Item</th>
-                                <th>Total</th>
-                                <th>Balance Due</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-invoices-table-body">
-                        </tbody>
-                    </table>
-                </div>
-
-                <h4 class="admin-section-title">Admin Activity Monitoring Logs</h4>
-                <div id="admin-logs" class="logs-box">
-                    [System Initialization]: Admin portal loaded securely.<br>
+                <div id="admin-tab-preview" class="admin-tab-pane">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="margin:0; font-size:0.95rem;">👁️ Live Customer View Tab (Real-Time Sandbox)</h4>
+                        <button class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="refreshLivePreview()">🔄 Refresh Preview</button>
+                    </div>
+                    <p style="font-size:0.8rem; color:var(--gray); margin-bottom: 10px;">This tab displays the exact storefront view experienced by customers visiting SimplyFab.</p>
+                    <div class="live-preview-container" id="live-preview-box">
+                    </div>
                 </div>
             </div>
         </div>
@@ -1462,8 +1524,6 @@
         fetchLiveExchangeRate();
 
         function convertVndToPhp(vndAmount) {
-            // Adds an extra 1000 PHP markup hidden on customer view calculations when desired, 
-            // or applied here globally/as part of retail price calculation.
             return ((vndAmount || 0) * vndRate) + 1000;
         }
 
@@ -1899,6 +1959,7 @@
                 document.getElementById('admin-code-input').value = '';
                 closeModals();
                 document.getElementById('admin-dashboard-modal').style.display = 'flex';
+                switchAdminTab('management', document.querySelector('.admin-tab-btn'));
                 renderLogs();
                 renderAdminTable();
                 populateInvoiceItemDropdown();
@@ -1909,6 +1970,46 @@
                 alert("Incorrect Admin Access Code!");
                 logActivity("Failed admin login attempt.");
             }
+        }
+
+        function switchAdminTab(tabName, btnEl) {
+            document.querySelectorAll('.admin-tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+
+            if(btnEl) btnEl.classList.add('active');
+            document.getElementById(`admin-tab-${tabName}`).classList.add('active');
+
+            if(tabName === 'preview') {
+                refreshLivePreview();
+            }
+        }
+
+        function refreshLivePreview() {
+            const previewBox = document.getElementById('live-preview-box');
+            previewBox.innerHTML = `<div class="product-grid" id="preview-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));"></div>`;
+            const pGrid = document.getElementById('preview-grid');
+
+            products.forEach(product => {
+                const primaryImage = product.images && product.images[0] ? product.images[0] : '';
+                const activeVnd = (product.isSale && product.salePriceVnd) ? product.salePriceVnd : (product.priceVnd || 0);
+                const activePhp = convertVndToPhp(activeVnd);
+                
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-img-wrapper" style="height: 180px;">
+                        <span class="product-badge">${product.category}</span>
+                        <span class="product-sku">${product.sku}</span>
+                        <img src="${primaryImage}" alt="${product.name}">
+                    </div>
+                    <div class="product-info" style="padding: 0.8rem;">
+                        <div class="product-title" style="font-size:0.9rem;">${product.name}</div>
+                        <div class="product-price" style="font-size:0.95rem;">₱${activePhp.toFixed(2)}</div>
+                        <div class="vnd-subprice">₫${activeVnd.toLocaleString()} VND</div>
+                    </div>
+                `;
+                pGrid.appendChild(card);
+            });
         }
 
         function autoGenerateItemName() {
