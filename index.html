@@ -1462,7 +1462,9 @@
         fetchLiveExchangeRate();
 
         function convertVndToPhp(vndAmount) {
-            return (vndAmount || 0) * vndRate;
+            // Adds an extra 1000 PHP markup hidden on customer view calculations when desired, 
+            // or applied here globally/as part of retail price calculation.
+            return ((vndAmount || 0) * vndRate) + 1000;
         }
 
         let products = JSON.parse(localStorage.getItem('simplyfab_products')) || [
@@ -1924,7 +1926,7 @@
         function previewVndConversion() {
             const vndVal = parseFloat(document.getElementById('item-price-vnd').value) || 0;
             const phpVal = convertVndToPhp(vndVal);
-            document.getElementById('vnd-conversion-preview').innerText = `Estimated PHP: ₱${phpVal.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('vnd-conversion-preview').innerText = `Estimated PHP (with ₱1,000 hidden markup): ₱${phpVal.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         }
 
         function renderAdminTable() {
@@ -2500,7 +2502,7 @@
                             <img src="${item.images && item.images[0] ? item.images[0] : ''}" class="cart-item-img" alt="">
                             <div>
                                 <strong>${item.name}</strong><br>
-                                <small style="color:var(--gray);">${item.sku} | Size: <strong>${item.chosenSize || 'M'}</strong> | ₱${activePhp.toFixed(2)}</small>
+                                <small style="color:var(--gray);">${item.sku} | Size: <strong>${item.chosenSize || 'M'}</strong> | ₱${activePhp.toFixed(2)} (₫${activeVnd.toLocaleString()} VND)</small>
                             </div>
                         </div>
                         <button class="btn btn-outline" style="padding: 3px 6px; font-size: 0.75rem;" onclick="removeFromCart(${index})">Remove</button>
