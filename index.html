@@ -319,19 +319,27 @@
             z-index: 2;
         }
 
-        .badge-new {
+        .badges-bottom-left {
             position: absolute;
             bottom: 10px;
             left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 2;
+            align-items: flex-start;
+        }
+
+        .badge-new {
             background: #ffb703;
             color: #000;
             padding: 4px 10px;
             border-radius: 4px;
             font-size: 0.75rem;
             font-weight: 800;
-            z-index: 2;
             animation: flashBadge 1.2s infinite alternate;
             box-shadow: 0 0 10px rgba(255, 183, 3, 0.8);
+            display: inline-block;
         }
 
         @keyframes flashBadge {
@@ -340,16 +348,13 @@
         }
 
         .badge-sale {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
             background: var(--danger);
             color: #fff;
             padding: 4px 10px;
             border-radius: 4px;
             font-size: 0.75rem;
             font-weight: 800;
-            z-index: 2;
+            display: inline-block;
         }
 
         .badge-outstock {
@@ -1696,11 +1701,15 @@
                 if (product.isOutStock) {
                     badgeHtml += `<div class="badge-outstock">❌ Out of Stock</div>`;
                 } else {
+                    let stackedBadges = '';
                     if (product.isNew) {
-                        badgeHtml += `<span class="badge-new">✨ New Arrival</span>`;
+                        stackedBadges += `<span class="badge-new">✨ New Arrival</span>`;
                     }
                     if (product.isSale) {
-                        badgeHtml += `<span class="badge-sale">🔥 SALE</span>`;
+                        stackedBadges += `<span class="badge-sale">🔥 SALE</span>`;
+                    }
+                    if (stackedBadges) {
+                        badgeHtml += `<div class="badges-bottom-left">${stackedBadges}</div>`;
                     }
                 }
 
@@ -1966,6 +1975,9 @@
                 renderInvoicesTable();
                 autoGenerateItemName();
                 previewVndConversion();
+
+                // Open customer view in a brand new browser tab automatically upon login
+                window.open(window.location.href.split('#')[0], '_blank');
             } else {
                 alert("Incorrect Admin Access Code!");
                 logActivity("Failed admin login attempt.");
