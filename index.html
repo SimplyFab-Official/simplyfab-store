@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SimplyFab - Boutique & Catalogue</title>
     <style>
-        /* Dynamic Theme Variables (Default: Catalogue) */
         :root {
             --primary: #d4a373;
             --primary-dark: #bc6c25;
@@ -18,7 +17,6 @@
             --edit: #2b9348;
         }
 
-        /* Casual Dresses Theme Variables */
         body.theme-casual {
             --primary: #4ea8de;
             --primary-dark: #3a86ff;
@@ -27,7 +25,6 @@
             --light: #f1faee;
         }
 
-        /* Gowns Theme Variables */
         body.theme-gowns {
             --primary: #9b5de5;
             --primary-dark: #7209b7;
@@ -51,7 +48,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Marquee Header */
         .marquee-container {
             background-color: var(--primary-dark);
             color: var(--white);
@@ -74,7 +70,6 @@
             100% { transform: translateX(-100%); }
         }
 
-        /* Live Hype / Visitor Bar */
         .hype-banner {
             background: #2b2d42;
             color: #fff;
@@ -92,7 +87,6 @@
             color: #ffb703;
         }
 
-        /* Contact & Official Store Banner */
         .official-fb-banner {
             background: #e7f3ff;
             text-align: center;
@@ -112,7 +106,6 @@
             text-decoration: underline;
         }
 
-        /* Navbar & Branding */
         header {
             background: var(--white);
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -223,14 +216,12 @@
             background: #132a13;
         }
 
-        /* Main Container */
         .main-container {
             max-width: 1200px;
             margin: 1.5rem auto;
             padding: 0 1rem;
         }
 
-        /* Filter Tabs */
         .filter-section {
             display: flex;
             justify-content: center;
@@ -258,7 +249,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
-        /* Product Grid */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -329,7 +319,6 @@
             z-index: 2;
         }
 
-        /* Flashing New Arrival Badge */
         .badge-new {
             position: absolute;
             bottom: 10px;
@@ -350,7 +339,6 @@
             100% { opacity: 1; transform: scale(1.05); }
         }
 
-        /* Sale / Promo Badge */
         .badge-sale {
             position: absolute;
             bottom: 10px;
@@ -364,7 +352,6 @@
             z-index: 2;
         }
 
-        /* Out of Stock Overlay Badge */
         .badge-outstock {
             position: absolute;
             top: 0;
@@ -446,7 +433,6 @@
             margin-right: 6px;
         }
 
-        /* Currency Exchange & VND Sub-price */
         .vnd-subprice {
             font-size: 0.75rem;
             color: var(--gray);
@@ -454,7 +440,6 @@
             margin-top: 2px;
         }
 
-        /* Size Selector Row on Product Card */
         .size-selector-container {
             margin-bottom: 10px;
         }
@@ -492,7 +477,6 @@
             border-color: var(--primary-dark);
         }
 
-        /* Likes & Community Bar on Card */
         .card-social-bar {
             display: flex;
             justify-content: space-between;
@@ -564,7 +548,6 @@
             pointer-events: none;
         }
 
-        /* Floating Community Chat Widget */
         .chat-widget-btn {
             position: fixed;
             bottom: 20px;
@@ -668,7 +651,6 @@
             flex: 1;
         }
 
-        /* Footer Contact Section */
         footer {
             background: var(--white);
             border-top: 1px solid #ddd;
@@ -697,7 +679,6 @@
             text-decoration: underline;
         }
 
-        /* Modal Base */
         .modal {
             display: none;
             position: fixed;
@@ -761,7 +742,6 @@
             overflow-y: auto;
         }
 
-        /* Gallery Modal with Zoom Feature & Comments */
         .gallery-main-view {
             width: 100%;
             height: 320px;
@@ -847,7 +827,6 @@
             border-left: 3px solid var(--primary-dark);
         }
 
-        /* Fullscreen Zoom Lightbox Modal */
         #lightbox-modal {
             display: none;
             position: fixed;
@@ -871,7 +850,6 @@
             box-shadow: 0 5px 25px rgba(0,0,0,0.5);
         }
 
-        /* Admin Dashboard UI Styles */
         .admin-section-title {
             margin: 1.2rem 0 0.8rem 0;
             font-size: 1rem;
@@ -950,7 +928,6 @@
             display: inline-block;
         }
 
-        /* Cart items list */
         .cart-item {
             display: flex;
             justify-content: space-between;
@@ -979,7 +956,6 @@
             font-size: 0.9rem;
         }
 
-        /* Invoice Printable Receipt Styling */
         .invoice-box {
             background: white;
             padding: 30px;
@@ -1018,7 +994,6 @@
             font-size: 1.3rem;
         }
 
-        /* Media Queries for Mobile Fine-Tuning */
         @media (max-width: 600px) {
             .nav-container {
                 padding: 0.6rem 0.8rem;
@@ -1078,7 +1053,7 @@
         </div>
 
         <div id="product-grid" class="product-grid">
-            </div>
+        </div>
     </div>
 
     <button class="chat-widget-btn" onclick="toggleChatWidget()">💬 Community Chat (<span id="chat-count-badge">0</span>)</button>
@@ -1088,7 +1063,7 @@
             <button class="close-modal" onclick="toggleChatWidget()">&times;</button>
         </div>
         <div id="chat-messages-container" class="chat-messages">
-            </div>
+        </div>
         <div class="chat-input-area">
             <div class="chat-input-row">
                 <input type="text" id="chat-user-name" placeholder="Your Name..." style="width: 100%;">
@@ -1226,7 +1201,7 @@
                         <div style="flex:1; min-width: 180px;">
                             <label style="font-size:0.8rem; font-weight:600;">Select Catalog Item:</label>
                             <select id="inv-item-select" style="padding:6px; font-size:0.85rem;" onchange="updateInvoiceItemPrice()">
-                                </select>
+                            </select>
                         </div>
                         <div style="flex:1; min-width: 120px;">
                             <label style="font-size:0.8rem; font-weight:600;">Payment Method:</label>
@@ -1297,7 +1272,7 @@
                             </tr>
                         </thead>
                         <tbody id="admin-items-table-body">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
 
@@ -1316,7 +1291,7 @@
                             </tr>
                         </thead>
                         <tbody id="admin-invoices-table-body">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
 
@@ -1418,12 +1393,12 @@
                 </div>
                 <p style="margin-bottom: 8px; font-weight: 600; font-size: 0.85rem;">All Photos (Tap to preview):</p>
                 <div id="gallery-thumbs-container" class="gallery-thumbs-row">
-                    </div>
+                </div>
 
                 <div class="comments-section">
                     <h4 style="font-size: 0.9rem; margin-bottom: 6px;">💬 Customer Feedback & Reviews</h4>
                     <div id="modal-comments-list" class="comments-list">
-                        </div>
+                    </div>
                     <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                         <input type="text" id="comment-author-input" placeholder="Your Name" style="flex:1; min-width: 110px; padding: 6px; font-size: 0.8rem;">
                         <input type="text" id="comment-text-input" placeholder="Write what you love about this item..." style="flex:2; min-width: 150px; padding: 6px; font-size: 0.8rem;" onkeydown="if(event.key==='Enter') submitProductComment()">
@@ -1463,7 +1438,6 @@
     </div>
 
     <script>
-        // GitHub Repository Config
         let ghConfig = JSON.parse(localStorage.getItem('simplyfab_gh_config')) || {
             username: "Jefferson0",
             repo: "simplyfab-store",
@@ -1471,7 +1445,6 @@
         };
         localStorage.setItem('simplyfab_gh_config', JSON.stringify(ghConfig));
 
-        // Live VND to PHP Exchange Rate Baseline & Fetcher (~0.002412 PHP per 1 VND baseline)
         let vndRate = parseFloat(localStorage.getItem('simplyfab_vnd_rate')) || 0.002412;
 
         async function fetchLiveExchangeRate() {
@@ -1484,14 +1457,12 @@
                         localStorage.setItem('simplyfab_vnd_rate', vndRate);
                     }
                 }
-            } catch (e) {
-                // Keep baseline if offline
-            }
+            } catch (e) {}
         }
         fetchLiveExchangeRate();
 
         function convertVndToPhp(vndAmount) {
-            return vndAmount * vndRate;
+            return (vndAmount || 0) * vndRate;
         }
 
         let products = JSON.parse(localStorage.getItem('simplyfab_products')) || [
@@ -1520,7 +1491,6 @@
         ];
 
         let invoices = JSON.parse(localStorage.getItem('simplyfab_invoices')) || [];
-
         let chatMessages = JSON.parse(localStorage.getItem('simplyfab_chat')) || [
             { name: "Admin SimplyFab", msg: "Welcome to our community chat! Feel free to ask any styling or sizing questions here.", time: "Just now" }
         ];
@@ -1533,14 +1503,12 @@
         let activeGalleryProductId = null;
         let selectedSizes = {};
 
-        // Initialize Visitor Hype Stats
         let visits = parseInt(localStorage.getItem('simplyfab_total_visits')) || 1248;
         visits++;
         localStorage.setItem('simplyfab_total_visits', visits);
         document.getElementById('total-visits-count').innerText = visits.toLocaleString();
         document.getElementById('live-visitors-count').innerText = Math.floor(Math.random() * 8) + 12;
 
-        // Secret Shortcut Listener: Shift + Ctrl + M
         document.addEventListener('keydown', function(event) {
             if (event.shiftKey && event.ctrlKey && (event.key === 'm' || event.key === 'M')) {
                 event.preventDefault();
@@ -1654,11 +1622,13 @@
             }
 
             filtered.forEach(product => {
-                const primaryImage = product.images[0] || '';
+                const primaryImage = product.images && product.images[0] ? product.images[0] : '';
                 let thumbsHtml = '';
-                product.images.forEach((imgUrl, idx) => {
-                    thumbsHtml += `<img src="${imgUrl}" class="card-thumb ${idx === 0 ? 'active' : ''}" onclick="switchCardImage(event, ${product.id}, '${imgUrl}', this)" alt="thumb">`;
-                });
+                if (product.images) {
+                    product.images.forEach((imgUrl, idx) => {
+                        thumbsHtml += `<img src="${imgUrl}" class="card-thumb ${idx === 0 ? 'active' : ''}" onclick="switchCardImage(event, ${product.id}, '${imgUrl}', this)" alt="thumb">`;
+                    });
+                }
 
                 let badgeHtml = '';
                 if (product.isOutStock) {
@@ -1673,9 +1643,9 @@
                 }
 
                 let priceHtml = '';
-                const activeVnd = (product.isSale && product.salePriceVnd) ? product.salePriceVnd : product.priceVnd;
+                const activeVnd = (product.isSale && product.salePriceVnd) ? product.salePriceVnd : (product.priceVnd || 0);
                 const activePhp = convertVndToPhp(activeVnd);
-                const origPhp = convertVndToPhp(product.priceVnd);
+                const origPhp = convertVndToPhp(product.priceVnd || 0);
 
                 if (product.isSale && product.salePriceVnd) {
                     priceHtml = `
@@ -1763,7 +1733,7 @@
             const product = products.find(p => p.id === productId);
             const messengerBtn = document.getElementById(`messenger-link-${productId}`);
             if (product && messengerBtn && !product.isOutStock) {
-                const activeVnd = (product.isSale && product.salePriceVnd) ? product.salePriceVnd : product.priceVnd;
+                const activeVnd = (product.isSale && product.salePriceVnd) ? product.salePriceVnd : (product.priceVnd || 0);
                 const activePhp = convertVndToPhp(activeVnd);
                 const inquiryText = `Hi SimplyFab! I would like to inquire about item ${product.sku} - ${product.name} (Size: ${size}) priced at ₱${activePhp.toFixed(2)} (₫${activeVnd.toLocaleString()} VND)`;
                 messengerBtn.href = `https://www.facebook.com/messages/t/110124887067313?text=` + encodeURIComponent(inquiryText);
@@ -1775,7 +1745,8 @@
             if(product) {
                 product.likes = (product.likes || 0) + 1;
                 syncToGitHubRepo(`Liked item ${product.sku}`);
-                renderProducts(document.querySelector('.filter-btn.active').textContent.toLowerCase().includes('casual') ? 'casual' : document.querySelector('.filter-btn.active').textContent.toLowerCase().includes('gowns') ? 'gowns' : 'all');
+                const activeCat = document.querySelector('.filter-btn.active').textContent.toLowerCase().includes('casual') ? 'casual' : document.querySelector('.filter-btn.active').textContent.toLowerCase().includes('gowns') ? 'gowns' : 'all';
+                renderProducts(activeCat);
                 if(activeGalleryProductId === productId) openGalleryModal(productId);
             }
         }
@@ -1805,20 +1776,22 @@
             const thumbsContainer = document.getElementById('gallery-thumbs-container');
             const commentsContainer = document.getElementById('modal-comments-list');
 
-            activeViewImg.src = product.images[0];
+            activeViewImg.src = product.images && product.images[0] ? product.images[0] : '';
             thumbsContainer.innerHTML = '';
 
-            product.images.forEach((imgUrl, idx) => {
-                const thumbDiv = document.createElement('div');
-                thumbDiv.className = `gallery-thumb-item ${idx === 0 ? 'active' : ''}`;
-                thumbDiv.innerHTML = `<img src="${imgUrl}" alt="gallery photo">`;
-                thumbDiv.onclick = function() {
-                    activeViewImg.src = imgUrl;
-                    document.querySelectorAll('.gallery-thumb-item').forEach(t => t.classList.remove('active'));
-                    thumbDiv.classList.add('active');
-                };
-                thumbsContainer.appendChild(thumbDiv);
-            });
+            if(product.images) {
+                product.images.forEach((imgUrl, idx) => {
+                    const thumbDiv = document.createElement('div');
+                    thumbDiv.className = `gallery-thumb-item ${idx === 0 ? 'active' : ''}`;
+                    thumbDiv.innerHTML = `<img src="${imgUrl}" alt="gallery photo">`;
+                    thumbDiv.onclick = function() {
+                        activeViewImg.src = imgUrl;
+                        document.querySelectorAll('.gallery-thumb-item').forEach(t => t.classList.remove('active'));
+                        thumbDiv.classList.add('active');
+                    };
+                    thumbsContainer.appendChild(thumbDiv);
+                });
+            }
 
             commentsContainer.innerHTML = '';
             if(!product.comments || product.comments.length === 0) {
@@ -1855,7 +1828,6 @@
             renderProducts('all');
         }
 
-        /* Community Chat Logic */
         function toggleChatWidget() {
             const box = document.getElementById('chat-widget-box');
             box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
@@ -1971,7 +1943,7 @@
             }
 
             filteredProducts.forEach(product => {
-                const activeVnd = (product.isSale && product.salePriceVnd) ? product.salePriceVnd : product.priceVnd;
+                const activeVnd = (product.isSale && product.salePriceVnd) ? product.salePriceVnd : (product.priceVnd || 0);
                 const activePhp = convertVndToPhp(activeVnd);
                 let badgeText = [];
                 if(product.isOutStock) badgeText.push("❌ Out of Stock");
@@ -1996,12 +1968,12 @@
             });
         }
 
-        /* Manual Invoicing & Payment Completion Logic */
         function populateInvoiceItemDropdown() {
             const select = document.getElementById('inv-item-select');
+            if(!select) return;
             select.innerHTML = '';
             products.forEach(p => {
-                const activeVnd = (p.isSale && p.salePriceVnd) ? p.salePriceVnd : p.priceVnd;
+                const activeVnd = (p.isSale && p.salePriceVnd) ? p.salePriceVnd : (p.priceVnd || 0);
                 const activePhp = convertVndToPhp(activeVnd);
                 const opt = document.createElement('option');
                 opt.value = p.id;
@@ -2014,7 +1986,7 @@
 
         function updateInvoiceItemPrice() {
             const select = document.getElementById('inv-item-select');
-            if(select.selectedOptions.length > 0) {
+            if(select && select.selectedOptions && select.selectedOptions.length > 0) {
                 const price = parseFloat(select.selectedOptions[0].getAttribute('data-price')) || 0;
                 document.getElementById('inv-unit-price').value = price.toFixed(2);
                 calcInvoiceTotals();
@@ -2059,7 +2031,7 @@
                 return;
             }
 
-            if(select.selectedOptions.length === 0) {
+            if(!select || select.selectedOptions.length === 0) {
                 alert("Please select a product item!");
                 return;
             }
@@ -2120,7 +2092,6 @@
                             history: [{ date: currentDateStr, amountPaid: totals.total, note: `Final payment completion linked from ${existingInv.invNumber}` }]
                         };
                         invoices.push(completionInv);
-                        alert(`Order completed! New Completion Invoice Number generated: ${newCompletionInvNum}`);
                     }
 
                     logActivity(`Updated and completed invoice ${existingInv.invNumber}`);
@@ -2322,7 +2293,7 @@
             event.preventDefault();
             const editId = document.getElementById('edit-item-id').value;
             const name = document.getElementById('item-name').value;
-            const category = document.getElementById('item-category').value; // 'casual', 'gowns', or 'catalogue'
+            const category = document.getElementById('item-category').value;
             const priceVnd = parseFloat(document.getElementById('item-price-vnd').value);
             const salePriceVndInput = document.getElementById('item-saleprice-vnd').value;
             const salePriceVnd = salePriceVndInput ? parseFloat(salePriceVndInput) : null;
@@ -2362,7 +2333,7 @@
             }
 
             let storedImageUrls = [];
-            if (existingProduct) {
+            if (existingProduct && existingProduct.images) {
                 storedImageUrls = [...existingProduct.images];
             }
 
@@ -2383,7 +2354,7 @@
                             ext = 'jpg';
                         }
 
-                        const fileNumber = existingProduct ? existingProduct.images.length + index + 1 : index + 1;
+                        const fileNumber = existingProduct && existingProduct.images ? existingProduct.images.length + index + 1 : index + 1;
                         const filePath = `images/${category}/${targetSku}_${fileNumber}.${ext}`;
                         
                         const success = await commitFileToGitHub(filePath, base64Data, `Upload image for ${targetSku}`);
@@ -2517,7 +2488,7 @@
                 let itemSummaryList = [];
 
                 cart.forEach((item, index) => {
-                    const activeVnd = (item.isSale && item.salePriceVnd) ? item.salePriceVnd : item.priceVnd;
+                    const activeVnd = (item.isSale && item.salePriceVnd) ? item.salePriceVnd : (item.priceVnd || 0);
                     const activePhp = convertVndToPhp(activeVnd);
                     totalPhp += activePhp;
                     itemSummaryList.push(`${item.sku} - ${item.name} [Size: ${item.chosenSize || 'M'}] (₱${activePhp.toFixed(2)} / ₫${activeVnd.toLocaleString()} VND)`);
@@ -2526,7 +2497,7 @@
                     div.className = 'cart-item';
                     div.innerHTML = `
                         <div class="cart-item-info">
-                            <img src="${item.images[0]}" class="cart-item-img" alt="">
+                            <img src="${item.images && item.images[0] ? item.images[0] : ''}" class="cart-item-img" alt="">
                             <div>
                                 <strong>${item.name}</strong><br>
                                 <small style="color:var(--gray);">${item.sku} | Size: <strong>${item.chosenSize || 'M'}</strong> | ₱${activePhp.toFixed(2)}</small>
